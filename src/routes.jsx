@@ -9,6 +9,7 @@ import CarInfo from './components/admin/cars/carInfo';
 import {connect} from 'react-redux';
 import * as action from './store/actions/login';
 import Logout from './components/authRoutes/logout';
+import Options from './components/admin/options'
 
 class Routes extends Component  {
 
@@ -17,12 +18,12 @@ class Routes extends Component  {
       
   }
   render (){
-
   console.log(this.props.user)
   return (
     <div>
       <Switch>  
         <PrivateRoute {...this.props} user={this.props.user} path="/dashboard/add" exact component={CarInfo}/>
+        <PrivateRoute {...this.props} user={this.props.user} path="/dashboard/options" exact component={Options}/>
         <PrivateRoute {...this.props} user={this.props.user} path="/dashboard/cars/:id" exact component={CarInfo}/>
         <PrivateRoute {...this.props} user={this.props.user} path="/dashboard/cars" exact component={Cars}/>
         

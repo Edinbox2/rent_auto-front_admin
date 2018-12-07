@@ -1,0 +1,28 @@
+input {
+    padding: 5px;
+
+}
+
+.edit_button, .add_button {
+    background: transparent;
+    border: none; 
+    outline: none; 
+    cursor: pointer;
+    height: 30px;
+    width: 30px;
+}
+
+.save_form{
+    background: lightblue;
+    border: 1px solid #ccc; 
+    outline: none; 
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.progress {
+    display: inline-block;
+    text-align: center;
+    width: 100%;
+}

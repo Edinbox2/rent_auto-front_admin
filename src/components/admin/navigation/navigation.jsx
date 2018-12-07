@@ -14,6 +14,10 @@ const links = [
         name: 'Добавить Авто',
         linkTo: '/add'
     }, 
+    {
+        name: 'Дополнительно',
+        linkTo: '/options'
+    }, 
 
 ]
 
