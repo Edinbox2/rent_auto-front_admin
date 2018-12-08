@@ -34,6 +34,13 @@ class ListItem extends Component {
     this.setState({ edit: true });
   };
 
+  onDeleteHandler=()=>{
+    if(window.confirm('удалить ?')){
+      this.props.Delete(this.props.id)
+    }
+  }
+
+
   render() {
     return (
       <TableRow>
@@ -53,12 +60,17 @@ class ListItem extends Component {
         ))}
         <TableCell>
           <button
-            className="edit_button"
+            className="button"
             onClick={this.state.edit ? this.onEditSubmit : this.editHander}
           > <i className="large material-icons">
               {this.state.edit ? "save" : "edit"}
             </i>
           </button>
+          {this.state.edit ? <button className="button" 
+          onClick={this.onDeleteHandler}>
+          <i className="large material-icons">
+              delete
+            </i></button> : null}
         </TableCell>
       </TableRow>
     );

@@ -3,13 +3,20 @@ input {
 
 }
 
-.edit_button, .add_button {
+.button {
     background: transparent;
     border: none; 
     outline: none; 
     cursor: pointer;
     height: 30px;
     width: 30px;
+}
+
+.Danger{
+    border-color: red;
+}
+.Valid{
+    border-color: green;
 }
 
 .save_form{

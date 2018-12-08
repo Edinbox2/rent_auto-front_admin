@@ -18,7 +18,6 @@ class Routes extends Component  {
       
   }
   render (){
-  console.log(this.props.user)
   return (
     <div>
       <Switch>  
@@ -26,7 +25,6 @@ class Routes extends Component  {
         <PrivateRoute {...this.props} user={this.props.user} path="/dashboard/options" exact component={Options}/>
         <PrivateRoute {...this.props} user={this.props.user} path="/dashboard/cars/:id" exact component={CarInfo}/>
         <PrivateRoute {...this.props} user={this.props.user} path="/dashboard/cars" exact component={Cars}/>
-        
         <PrivateRoute {...this.props} user={this.props.user} path="/logout" exact component={Logout} />
         <PrivateRoute {...this.props} user={this.props.user} path="/dashboard" exact component={Dashboard}/>
         <PublicRoute {...this.props} user={this.props.user} path="/sign_in" restricted={true} exact component={SignIn} />

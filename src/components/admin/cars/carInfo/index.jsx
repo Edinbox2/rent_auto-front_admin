@@ -108,10 +108,6 @@ class CarInfo extends Component {
         validationMessage: "",
         showLabel: true
       }
-      // tarifs: {
-      //   element: "header",
-      //   title: 'Тарифы'
-      // }
     }
   };
 
@@ -205,7 +201,7 @@ class CarInfo extends Component {
           rental: { ...this.state.car.rental, day_cost: dataToSubmit.rental }
         };
 
-        // equation check: if no change the form wont be sent
+        // equality check: if no change the form wont be sent
         const postJSON = JSON.stringify(model);
         const getJSON = JSON.stringify(this.state.car);
         if (postJSON !== getJSON) {

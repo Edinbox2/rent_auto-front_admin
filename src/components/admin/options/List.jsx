@@ -11,7 +11,8 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import "./index.css";
-import {headers} from '../../UI/misc'
+import { headers, idValidation } from "../../UI/misc";
+import Error from "./error";
 
 class List extends Component {
   state = {
@@ -28,14 +29,18 @@ class List extends Component {
     axios
       .get("https://api.rent-auto.biz.tm/additions", headers)
       .then(res => {
-        const list = res.data
-          .sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0))
-          .reverse();
+        const list = res.data;
         this.setState({ list, isLoading: false });
       })
       .catch(error => {
         this.setState({ error });
       });
+  };
+
+  getState = () => {
+    return this.state.list
+      .sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0))
+      .reverse();
   };
 
   onSubmitForm = (data, initName) => {
@@ -50,38 +55,55 @@ class List extends Component {
       }
       return item;
     });
-    console.log(data);
     this.setState({ list });
   };
 
-  AddItem = data => {
+  addItem = data => {
     if (this.state.list) {
       const list = [...this.state.list];
-      list.push(data);
-      this.setState({ list });
+      let valid = idValidation(list, data);
+      console.log(valid);
+      if (valid) {
+        list.push(data);
+        this.setState({ list, error: "" });
+      } else {
+        this.setState({ error: "такой id уже существует" });
+      }
     }
+  };
+
+  deleteItem = id => {
+    const array = this.getState();
+    const filterArray = array.filter(item => {
+      return item.id !== id;
+    });
+    this.setState({ list: filterArray });
   };
 
   saveChanges = e => {
     e.preventDefault();
-    console.log(this.state.list);
-    const data = this.state.list
-    axios.patch(`https://api.rent-auto.biz.tm/additions`, data, headers).then(res=>{
-    this.setState({list: res.data})
-    }).catch(error=>{
-      this.setState({isLoading: false, error})
-    })
+    const data = this.state.list;
+    axios
+      .patch(`https://api.rent-auto.biz.tm/additions`, data, headers)
+      .then(res => {
+        this.setState({ list: res.data });
+      })
+      .catch(error => {
+        this.setState({ isLoading: false, error });
+      });
   };
 
   render() {
+    const stateList = this.getState();
     const list = (
       <React.Fragment>
-        {this.state.list.map(item => {
+        {stateList.map(item => {
           return (
             <ListItem
               key={item.id}
               {...item}
               onSubmitForm={this.onSubmitForm}
+              Delete={this.deleteItem}
             />
           );
         })}
@@ -106,7 +128,8 @@ class List extends Component {
               </TableRow>
             </TableHead>
             <TableBody>
-              <AddItem onSubmitHandler={this.AddItem} />
+              <AddItem onSubmitHandler={this.addItem} list={this.state.list} />
+              <Error error={this.state.error} />
               {list}
             </TableBody>
           </Table>

@@ -3,6 +3,7 @@ import "./index.css";
 import { data } from "./data";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
+import {idValidation} from '../../UI/misc'
 
 class ListItem extends Component {
   state = {
@@ -16,38 +17,40 @@ class ListItem extends Component {
       price: "",
       note: ""
     },
-    message: ""
+    submit: false, 
+    valid: false,
+    validId: true
   };
 
   changeHandler = (event, name) => {
     const newData = { ...this.state.data };
     newData[name] = event.target.value;
-    this.setState({ data: newData, message: "" });
+    this.setState({ data: newData});
   };
 
   onSubmitHandler = e => {
     e.preventDefault();
+    this.setState({submit: true})
+    let valid = true;
+    let validId = idValidation(this.props.list, this.state.data)
     const data = this.state.data;
     for (let key in data) {
-      if ((!data[key.active] || !data[key.service]) && data[key] === "") {
-        this.setState({ message: "заполните все поля" });
-        return;
-      } else {
-        this.props.onSubmitHandler(this.state.data);
-        this.setState({ message: "элемент добвлен" });
-        setTimeout(() => {
-          this.setState({ message: "" });
-        }, 1000);
-      }
+      valid = data[key] !== "" && valid;
     }
-
-    const newData = { ...this.state.data };
-    newData.id = "";
+    if(valid){
+    this.props.onSubmitHandler(this.state.data);
+    if(validId){
+       const newData = { ...this.state.data };
+    newData.id = "";  
     newData.note = "";
     newData.price = "";
     newData.code = "";
     newData.name = "";
-    this.setState({ data: newData });
+    this.setState({ data: newData, submit: false, valid: true, validId: true });
+    }
+    }else{
+      this.setState({valid: false, validId: false})
+    }
   };
 
   render() {
@@ -61,12 +64,19 @@ class ListItem extends Component {
               value={this.state.data[item.name]}
               placeholder={item.name}
               name={item.name}
+              className={
+                this.state.submit
+                  ? this.state.data[item.name] === ""
+                    ? "Danger"
+                    : "Valid" 
+                  : "Default"
+              }
               onChange={event => this.changeHandler(event, item.name)}
             />
           </TableCell>
         ))}
         <TableCell>
-          <button className="add_button" onClick={this.onSubmitHandler}>
+          <button className="button" onClick={this.onSubmitHandler}>
             <i className="large material-icons">add_circle_outline</i>
           </button>
         </TableCell>

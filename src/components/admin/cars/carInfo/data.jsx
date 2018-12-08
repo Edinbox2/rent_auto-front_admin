@@ -17,11 +17,5 @@ export const data = [
     {
         id:"engine_volume", 
     },  
-    // {
-    //     id:"tarifs", 
-    // },  
-   
-
-
 
 ]

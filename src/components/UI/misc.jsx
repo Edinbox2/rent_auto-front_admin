@@ -17,6 +17,17 @@ export const validate = (element)=>{
     return error
 }
 
+//ID MATCH UP VALIDATION 
+export const idValidation = (list, data)=>{
+    let valid = true
+    for(let i = 0; i < list.length; i++){
+        if(data.id == list[i].id){
+          valid = false
+        }
+        }
+        return valid
+}
+
 //HEADERS
 const token = localStorage.getItem('token');
 const email = 'unknown@unknown'
