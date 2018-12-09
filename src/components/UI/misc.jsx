@@ -33,4 +33,17 @@ const token = localStorage.getItem('token');
 const email = 'unknown@unknown'
 export const headers = {headers:{'X-USER-TOKEN': token, 'X-USER-EMAIL': email}}
     
-
+// new ID
+export const nextId = (data) => {
+    let idArray = []
+    for(let key in data){
+        idArray.push(data[key].id)
+    }
+    let min = idArray[0]
+    let max = min
+    for(let i = 0; i < idArray.length; ++i){
+        if(idArray[i] > max) max = idArray[i]
+        if(idArray[i] < min) min = idArray[i]
+    }
+    return max+1;
+}

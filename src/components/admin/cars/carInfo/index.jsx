@@ -113,7 +113,6 @@ class CarInfo extends Component {
 
   componentDidMount() {
     axios.get(`https://api.rent-auto.biz.tm/info_models`, headers).then(res => {
-      console.log(res);
       const id = this.props.match.params.id;
       let car;
       for (let key in res.data) {
@@ -121,8 +120,6 @@ class CarInfo extends Component {
           car = res.data[key];
         }
       }
-      console.log(car);
-
       this.setState({ car, carId: id });
       this.updateFields(car);
     });

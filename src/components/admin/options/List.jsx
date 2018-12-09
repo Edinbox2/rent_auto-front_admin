@@ -11,30 +11,33 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import "./index.css";
-import { headers } from "../../UI/misc";
-import Error from "./error";
+import { headers, nextId } from "../../UI/misc";
 
 class List extends Component {
   state = {
     list: [],
     isLoading: true,
-    message: ''
+    message: '',
+    lastId: ''
   };
 
   componentDidMount() {
     this.getList();
   }
 
+  
   getList = () => {
     axios
       .get("https://api.rent-auto.biz.tm/additions", headers)
       .then(res => {
         const list = res.data;
-        this.setState({ list, isLoading: false });
+        const lastId = nextId(list)
+        this.setState({ list, isLoading: false, lastId });
       })
       .catch(error => {
         this.setState({ message: error });
       });
+
   };
 
   getState = () => {
@@ -43,28 +46,14 @@ class List extends Component {
       .reverse();
   };
 
-  onSubmitForm = (data, initName) => {
-    let list = this.state.list;
-    list.map(item => {
-      if (item.name === initName) {
-        item.id = data.id;
-        item.name = data.name;
-        item.price = data.price;
-        item.note = data.note;
-        item.code = data.code;
-      }
-      return item;
-    });
-    this.setState({ list });
-  };
-
   addItem = (data, message) => {
-    console.log('item added')
     const list = [...this.state.list]
+    let id = this.state.lastId + 1
     if(data !== null){
       list.push(data)
+      
     }      
-      this.setState({list, message})       
+      this.setState({list, message, lastId: id })       
   };
 
   deleteItem = id => {
@@ -75,20 +64,8 @@ class List extends Component {
     this.setState({ list: filterArray });
   };
 
-  saveChanges = e => {
-    e.preventDefault();
-    const data = this.state.list;
-    axios
-      .patch(`https://api.rent-auto.biz.tm/additions`, data, headers)
-      .then(res => {
-        this.setState({ list: res.data });
-      })
-      .catch(error => {
-        this.setState({ isLoading: false, error });
-      });
-  };
-
   render() {
+    console.log(this.state.lastId)
     const stateList = this.getState();
     const list = (
       <React.Fragment>
@@ -97,7 +74,7 @@ class List extends Component {
             <ListItem
               key={item.id}
               {...item}
-              onSubmitForm={this.onSubmitForm}
+              list={this.state.list}
               Delete={this.deleteItem}
             />
           );
@@ -106,25 +83,24 @@ class List extends Component {
     );
 
     return (
+      
       <div>
         <Paper>
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell>id</TableCell>
                 {data.map(item => (
                   <TableCell key={item.name}>{item.name}</TableCell>
                 ))}
-                <TableCell>
-                  <button onClick={this.saveChanges} className="save_form">
-                    <i className="large material-icons">save</i>
-                    <span>сохранить</span>
-                  </button>
-                </TableCell>
+                <TableCell></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              <AddItem onAddHandler={this.addItem} list={this.state.list} />
-              <Error error={this.state.message} />
+              <AddItem onAddHandler={this.addItem}
+              lastId={this.state.lastId}
+              list={this.state.list} />
+              {/* <Error error={this.state.message} /> */}
               {list}
             </TableBody>
           </Table>

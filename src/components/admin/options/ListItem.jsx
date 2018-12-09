@@ -16,23 +16,35 @@ class ListItem extends Component {
       code: this.props.code,
       price: this.props.price,
       note: this.props.note
-    }
+    }, 
+    valid: true, 
+    validId: true, 
   };
 
   onEditSubmit = e => {
     e.preventDefault();
     const data = {...this.state.data}
-    axios.patch(`https://api.rent-auto.biz.tm/additions/${this.props.id}`,data, headers). then(res=>{
-      const response = res.data
-      this.props.onSubmitForm(response, this.props.name);
-      })
-    
-    this.setState({ edit: false });
+    let valid = true;
+    for(let key in data){
+      valid = data[key] !== "" && valid; 
+    }
+    if(valid) {
+      const data = {...this.state.data}
+        axios.patch(`https://api.rent-auto.biz.tm/additions/${this.props.id}`, data, headers).then(res=>{
+          const response = res.data
+          this.props.onEditSubmit(response, this.props.id);
+          }).catch(error =>{
+            console.log(error)
+          })
+        
+        this.setState({ edit: false });
+      
+    }
   };
 
-  fieldsUpdate = (e, id) => {
+  fieldsUpdate = (e, key) => {
     const newData = { ...this.state.data };
-    newData[id] = e.target.value;
+    newData[key] = e.target.value;
     this.setState({ data: newData });
   };
 
@@ -43,7 +55,7 @@ class ListItem extends Component {
 
   onDeleteHandler=()=>{
     if(window.confirm('удалить ?')){
-      axios.delete(`https://api.rent-auto.biz.tm/additions/${this.props.id}`, headers). then(res=>{
+      axios.delete(`https://api.rent-auto.biz.tm/additions/${this.props.id}`, headers).then(res=>{
       console.log('item removed from the list')
       })
       this.props.Delete(this.props.id)
@@ -54,6 +66,7 @@ class ListItem extends Component {
   render() {
     return (
       <TableRow>
+        <TableCell>{this.state.data.id}</TableCell>
         {data.map(item => (
           <TableCell key={item.name}>
             {this.state.edit ? (
