@@ -11,14 +11,14 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import "./index.css";
-import { headers, idValidation } from "../../UI/misc";
+import { headers } from "../../UI/misc";
 import Error from "./error";
 
 class List extends Component {
   state = {
     list: [],
     isLoading: true,
-    error: ""
+    message: ''
   };
 
   componentDidMount() {
@@ -33,7 +33,7 @@ class List extends Component {
         this.setState({ list, isLoading: false });
       })
       .catch(error => {
-        this.setState({ error });
+        this.setState({ message: error });
       });
   };
 
@@ -58,18 +58,13 @@ class List extends Component {
     this.setState({ list });
   };
 
-  addItem = data => {
-    if (this.state.list) {
-      const list = [...this.state.list];
-      let valid = idValidation(list, data);
-      console.log(valid);
-      if (valid) {
-        list.push(data);
-        this.setState({ list, error: "" });
-      } else {
-        this.setState({ error: "такой id уже существует" });
-      }
-    }
+  addItem = (data, message) => {
+    console.log('item added')
+    const list = [...this.state.list]
+    if(data !== null){
+      list.push(data)
+    }      
+      this.setState({list, message})       
   };
 
   deleteItem = id => {
@@ -128,8 +123,8 @@ class List extends Component {
               </TableRow>
             </TableHead>
             <TableBody>
-              <AddItem onSubmitHandler={this.addItem} list={this.state.list} />
-              <Error error={this.state.error} />
+              <AddItem onAddHandler={this.addItem} list={this.state.list} />
+              <Error error={this.state.message} />
               {list}
             </TableBody>
           </Table>
