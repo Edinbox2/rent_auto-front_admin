@@ -2,8 +2,10 @@ import React, { Component } from "react";
 import "./index.css";
 import { data } from "./data";
 
+import {headers} from '../../UI/misc'
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
+import axios from 'axios';
 
 class ListItem extends Component {
   state = {
@@ -19,7 +21,12 @@ class ListItem extends Component {
 
   onEditSubmit = e => {
     e.preventDefault();
-    this.props.onSubmitForm(this.state.data, this.props.name);
+    const data = {...this.state.data}
+    axios.patch(`https://api.rent-auto.biz.tm/additions/${this.props.id}`,data, headers). then(res=>{
+      const response = res.data
+      this.props.onSubmitForm(response, this.props.name);
+      })
+    
     this.setState({ edit: false });
   };
 
@@ -36,6 +43,9 @@ class ListItem extends Component {
 
   onDeleteHandler=()=>{
     if(window.confirm('удалить ?')){
+      axios.delete(`https://api.rent-auto.biz.tm/additions/${this.props.id}`, headers). then(res=>{
+      console.log('item removed from the list')
+      })
       this.props.Delete(this.props.id)
     }
   }
