@@ -10,7 +10,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import {getToken} from '../../UI/misc';
+import {getHeaders} from '../../UI/misc';
 
 class Cars extends Component {
   state = {
@@ -19,7 +19,7 @@ class Cars extends Component {
   };
 
   componentDidMount() {
-    axios.get(`https://api.rent-auto.biz.tm/info_models`, getToken()).then(res => {
+    axios.get(`https://api.rent-auto.biz.tm/info_models`, getHeaders()).then(res => {
     console.log(res.data)
     const list = res.data.sort((a,b) => (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0)); 
       this.setState({ cars: list, isLoading: false });

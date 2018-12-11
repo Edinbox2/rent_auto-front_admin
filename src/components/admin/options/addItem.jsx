@@ -3,7 +3,7 @@ import "./index.css";
 import { data } from "./data";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
-import { getToken } from "../../UI/misc";
+import { getHeaders } from "../../UI/misc";
 import axios from "axios";
 
 class ListItem extends Component {
@@ -40,7 +40,7 @@ class ListItem extends Component {
     } 
     if (valid) {
       axios
-        .post(`https://api.rent-auto.biz.tm/additions`, data, getToken())
+        .post(`https://api.rent-auto.biz.tm/additions`, data, getHeaders())
         .then(res => {
           const response = res.data;
           this.props.onAddHandler(response, null)

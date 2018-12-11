@@ -11,7 +11,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import "./index.css";
-import { getToken, nextId } from "../../UI/misc";
+import { getHeaders, nextId } from "../../UI/misc";
 
 class List extends Component {
   state = {
@@ -28,7 +28,7 @@ class List extends Component {
   
   getList = () => {
     axios
-      .get("https://api.rent-auto.biz.tm/additions", getToken())
+      .get("https://api.rent-auto.biz.tm/additions", getHeaders())
       .then(res => {
         const list = res.data;
         const lastId = nextId(list)
@@ -100,7 +100,7 @@ class List extends Component {
               <AddItem onAddHandler={this.addItem}
               lastId={this.state.lastId}
               list={this.state.list} />
-              {/* <Error error={this.state.message} /> */}
+              
               {list}
             </TableBody>
           </Table>

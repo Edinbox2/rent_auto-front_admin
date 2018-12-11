@@ -29,7 +29,7 @@ export const idValidation = (list, data) => {
 };
 
 //HEADERS
-export const getToken = () => {
+export const getHeaders = () => {
   const token = localStorage.getItem("token");
   const email = "unknown@unknown";
   const headers = {
