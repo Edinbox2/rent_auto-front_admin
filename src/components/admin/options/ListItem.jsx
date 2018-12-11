@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "./index.css";
 import { data } from "./data";
 
-import {headers} from '../../UI/misc'
+import {getToken} from '../../UI/misc'
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import axios from 'axios';
@@ -30,7 +30,7 @@ class ListItem extends Component {
     }
     if(valid) {
       const data = {...this.state.data}
-        axios.patch(`https://api.rent-auto.biz.tm/additions/${this.props.id}`, data, headers).then(res=>{
+        axios.patch(`https://api.rent-auto.biz.tm/additions/${this.props.id}`, data, getToken()).then(res=>{
           const response = res.data
           this.props.onEditSubmit(response, this.props.id);
           }).catch(error =>{
@@ -55,7 +55,7 @@ class ListItem extends Component {
 
   onDeleteHandler=()=>{
     if(window.confirm('удалить ?')){
-      axios.delete(`https://api.rent-auto.biz.tm/additions/${this.props.id}`, headers).then(res=>{
+      axios.delete(`https://api.rent-auto.biz.tm/additions/${this.props.id}`, getToken()).then(res=>{
       console.log('item removed from the list')
       })
       this.props.Delete(this.props.id)

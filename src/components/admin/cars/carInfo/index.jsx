@@ -6,7 +6,7 @@ import "./carInfo.css";
 import axios from "axios";
 import { data } from "./data";
 import { connect } from "react-redux";
-import { headers } from "../../../UI/misc";
+import { getToken } from "../../../UI/misc";
 import * as action from "../../../../store/actions/edit";
 
 class CarInfo extends Component {
@@ -112,7 +112,7 @@ class CarInfo extends Component {
   };
 
   componentDidMount() {
-    axios.get(`https://api.rent-auto.biz.tm/info_models`, headers).then(res => {
+    axios.get(`https://api.rent-auto.biz.tm/info_models`, getToken()).then(res => {
       const id = this.props.match.params.id;
       let car;
       for (let key in res.data) {
@@ -208,7 +208,7 @@ class CarInfo extends Component {
                 model.id
               )}`,
               model,
-              headers
+              getToken()
             )
             .then(res => {
               console.log("success");
