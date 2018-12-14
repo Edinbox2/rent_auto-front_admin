@@ -21,11 +21,9 @@ class imageUploader extends Component {
         const image = this.state.uploadedFile.name
         const data = this.state.uploadedFile
         fd.append('file', data, image)
-        console.log(fd)
         axios.post(`https://srv.rent-auto.biz.tm/images/models/${this.props.id}/upload`, 
         fd, getHeaders()).then(res=>{
-            console.log(res.data)
-
+           
         })
     }
 

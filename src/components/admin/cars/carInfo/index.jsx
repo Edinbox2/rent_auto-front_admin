@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import AdminLayout from "../../../hoc/adminLayout";
 import FormField from "../../../UI/formField";
-import { validate } from "../../../UI/misc";
 import "./carInfo.css";
 import axios from "axios";
 import { data } from "./data";
@@ -9,7 +8,8 @@ import { connect } from "react-redux";
 import { getHeaders, makeNewObject } from "../../../UI/misc";
 import * as action from "../../../../store/actions/edit";
 import ImageUploader from "./imageUploader";
-
+import {updateFields, updateField, formIsValid} from './utilities'; 
+ 
 class CarInfo extends Component {
   state = {
     formType: "",
@@ -19,18 +19,15 @@ class CarInfo extends Component {
       link: [],
       brand: []
     },
-
     formSubmit: false,
     formError: false,
     formSuccess: "",
-    image: "",
     formdata: {
       link: {
         value: "",
         element: "select",
         config: {
-          name: "image",
-          type: "text",
+          name: "link",
           label: "Модели"
         },
         validation: {
@@ -60,7 +57,6 @@ class CarInfo extends Component {
         element: "select",
         config: {
           name: "brand",
-          type: "text",
           label: "Бренд"
         },
         validation: {
@@ -130,7 +126,7 @@ class CarInfo extends Component {
           }
         }
         this.setState({ car, carId: id });
-        this.updateFields(car);
+        this.updateFormFields(car);
       });
 
     axios.get(`https://srv.rent-auto.biz.tm/images`, getHeaders()).then(res => {
@@ -157,114 +153,31 @@ class CarInfo extends Component {
     });
   }
 
-  updateFields = car => {
+  updateFormFields = (car) => {
+    const formdata = {...this.state.formdata}
     if (car) {
-      const formdata = { ...this.state.formdata };
-      for (let key in formdata) {
-        switch (key) {
-          case "link":
-            formdata[key].value = car.link;
-            break;
-          case "name":
-            formdata[key].value = car.name;
-            break;
-          case "brand":
-            formdata[key].value = car.brand.name;
-            break;
-          case "rental":
-            formdata[key].value = car.rental.day_cost;
-            break;
-          case "model_class":
-            formdata[key].value = car.model_class.name;
-            break;
-          case "engine_volume":
-            formdata[key].value = car.engine_volume;
-            break;
-          default:
-            formdata[key].value = "";
-        }
-      }
-      this.setState({ formdata: formdata, formType: "edit" });
+      const form = updateFields(car, formdata)
+      this.setState({ formdata: form, formType: "edit" });
     } else {
       this.setState({ formType: "add" });
     }
   };
 
-  formUpdate = element => {
-    //element == {event, id}
+  updateHandler = element => {
     const formdata = { ...this.state.formdata };
-    const newElement = { ...formdata[element.id] };
-    if (element.id === "link") {
-      newElement.value = `https://srv.rent-auto.biz.tm/${
-        element.event.target.value
-      }`;
-    } else {
-      newElement.value = element.event.target.value;
-    }
-    const validData = validate(newElement);
-    newElement.valid = validData[0];
-    newElement.validationMessage[1];
-    formdata[element.id] = newElement;
+    const form = updateField(element, formdata )
     this.setState({
-      formdata: formdata
+      formdata: form
     });
   };
 
   submitHander = event => {
     event.preventDefault();
-
-    let dataToSubmit = {};
-    let dataIsValid = true;
-
-    for (let key in this.state.formdata) {
-      dataToSubmit[key] = this.state.formdata[key].value;
-      dataIsValid = this.state.formdata[key].valid && dataIsValid;
-    }
+    const formdata = {...this.state.formdata}
+    const car = this.state.car
+    const carId = this.state.carId
+    formIsValid(car, carId, formdata)
     this.setState({ formSubmit: true });
-    if (dataIsValid) {
-      if (this.state.carId) {
-        const model = {
-          ...this.state.car,
-          link: `https://srv.rent-auto.biz.tm/${this.state.link}`,
-          brand: { ...this.state.car.brand, name: dataToSubmit.brand },
-          engine_volume: dataToSubmit.engine_volume,
-          full_name: dataToSubmit.full_name,
-          name: dataToSubmit.name,
-          model_class: {
-            ...this.state.car.model_class,
-            name: dataToSubmit.model_class
-          },
-          rental: { ...this.state.car.rental, day_cost: dataToSubmit.rental }
-        };
-
-        // equality check: if no change the form wont be sent
-        const postJSON = JSON.stringify(model);
-        const getJSON = JSON.stringify(this.state.car);
-        if (postJSON !== getJSON) {
-          axios
-            .patch(
-              `https://api.rent-auto.biz.tm/info_models/${JSON.parse(
-                model.id
-              )}`,
-              model,
-              getHeaders()
-            )
-            .then(res => {
-              console.log("success");
-              console.log(res.data);
-            });
-        } else {
-          return;
-        }
-      } else {
-        const newdata = {
-          ...dataToSubmit
-        };
-        console.log(newdata);
-      }
-    } else {
-      console.log("select all the fields");
-    }
   };
 
   render() {
@@ -275,7 +188,7 @@ class CarInfo extends Component {
           <ImageUploader
             id={this.state.carId}
             img={this.state.formdata.link.value}
-          />
+          />        
           <form
             onSubmit={event => this.submitHander(event)}
             className="car_edit_form"
@@ -286,7 +199,7 @@ class CarInfo extends Component {
                 className="edit_car_formField"
                 id={item.id}
                 formdata={this.state.formdata[item.id]}
-                change={element => this.formUpdate(element)}
+                change={element => this.updateHandler(element)}
                 submit={this.state.formSubmit}
                 options={this.state.options[item.id]}
               />
