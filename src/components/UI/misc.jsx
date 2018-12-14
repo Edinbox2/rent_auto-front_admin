@@ -52,3 +52,13 @@ export const nextId = data => {
   }
   return max + 1;
 };
+
+//make new object
+export const makeNewObject = (arr, newArr, name)=>{
+  arr.forEach(key=>{
+    newArr.push({
+      name: key[name]
+    })
+  })
+  return newArr; 
+}

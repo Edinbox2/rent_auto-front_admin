@@ -1,6 +1,6 @@
 export const data = [
     {
-        id:"full_name", 
+        id: 'link'
     }, 
     {
         id:"name", 

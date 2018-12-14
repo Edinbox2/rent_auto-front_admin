@@ -6,7 +6,7 @@ import TableRow from "@material-ui/core/TableRow";
 import { getHeaders } from "../../UI/misc";
 import axios from "axios";
 
-class ListItem extends Component {
+class addItem extends Component {
   state = {
     data: {
       id: "", 
@@ -101,4 +101,4 @@ class ListItem extends Component {
   }
 }
 
-export default ListItem;
+export default addItem;
