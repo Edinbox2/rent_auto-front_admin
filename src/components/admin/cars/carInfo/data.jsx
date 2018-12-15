@@ -9,6 +9,9 @@ export const data = [
         id:"brand", 
     },  
     {
+        id:"style", 
+    },
+    {
         id:"model_class", 
     }, 
     {
@@ -17,5 +20,8 @@ export const data = [
     {
         id:"engine_volume", 
     },  
+    {
+        id:"note", 
+    },
 
 ]

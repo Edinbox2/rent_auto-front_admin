@@ -10,7 +10,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import {getHeaders} from '../../UI/misc';
+import { getHeaders } from "../../UI/misc";
 
 class Cars extends Component {
   state = {
@@ -19,11 +19,33 @@ class Cars extends Component {
   };
 
   componentDidMount() {
-    axios.get(`https://api.rent-auto.biz.tm/info_models`, getHeaders()).then(res => {
-    const list = res.data.sort((a,b) => (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0)); 
-      this.setState({ cars: list, isLoading: false });
-    });
+    axios
+      .get(`https://api.rent-auto.biz.tm/info_models`, getHeaders())
+      .then(res => {
+        const list = res.data.sort((a, b) =>
+          a.id > b.id ? 1 : b.id > a.id ? -1 : 0
+        );
+        this.setState({ cars: list, isLoading: false });
+      });
   }
+
+  deleteHandler = id => {
+    console.log(id)
+    const array = this.state.cars;
+    const filterArray = array.filter(item => {
+      return item.id !== id;
+    });
+
+    this.setState({ cars: filterArray });
+    if (window.confirm("удалить?")) {
+      axios
+        .delete(`https://api.rent-auto.biz.tm/models/${id}`, getHeaders())
+        .then(res => {
+          console.log("item has been removed");
+        });
+    }
+  };
+
   render() {
     return (
       <AdminLayout>
@@ -33,18 +55,26 @@ class Cars extends Component {
               <TableHead>
                 <TableRow>
                   <TableCell>id</TableCell>
-                  <TableCell>full brand</TableCell>
-                  <TableCell>note</TableCell>
+                  <TableCell>Наименование</TableCell>
+                  <TableCell>удалить</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {this.state.cars.map((item, i) => (
+                {this.state.cars.reverse().map((item, i) => (
                   <TableRow key={i}>
                     <TableCell>{item.id}</TableCell>
                     <TableCell>
-                      <Link to={`/dashboard/cars/${item.id}`}>{item.full_name}</Link>
+                      <Link to={`/dashboard/cars/${item.id}`}>
+                        {item.full_name}
+                      </Link>
                     </TableCell>
-                    <TableCell>{item.note}</TableCell>
+                    <TableCell>
+                      <button
+                        onClick={ () => this.deleteHandler(item.id)}
+                      >
+                        <i className="large material-icons">delete</i>
+                      </button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

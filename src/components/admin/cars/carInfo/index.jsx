@@ -52,6 +52,21 @@ class CarInfo extends Component {
         validationMessage: "",
         showLabel: true
       },
+      style: {
+        value: "",
+        element: "input",
+        config: {
+          name: "style",
+          type: "text",
+          label: "Стиль"
+        },
+        validation: {
+          required: true
+        },
+        valid: true,
+        validationMessage: "",
+        showLabel: true
+      },
       brand: {
         value: "",
         element: "select",
@@ -101,8 +116,23 @@ class CarInfo extends Component {
         element: "input",
         config: {
           name: "car_name",
-          type: "text",
+          type: "number",
           label: "Объём двигателя модели"
+        },
+        validation: {
+          required: true
+        },
+        valid: true,
+        validationMessage: "",
+        showLabel: true
+      },
+      note: {
+        value: "",
+        element: "input",
+        config: {
+          name: "note",
+          type: "text",
+          label: "Описание"
         },
         validation: {
           required: true
@@ -131,14 +161,19 @@ class CarInfo extends Component {
 
     axios.get(`https://srv.rent-auto.biz.tm/images`, getHeaders()).then(res => {
       const id = this.props.match.params.id;
-      const images = res.data.images.filter(key => {
+      let images =[];
+      if(id){
+        images = res.data.images.filter(key => {
         if (key.resource_id == id) {
           return true;
         } else {
           return false;
         }
       });
-
+      }else{
+        images = res.data.images
+      } 
+      console.log(images)
       const links = makeNewObject(images, [], "path");
       const options = { ...this.state.options };
       options.link = [...links];
@@ -158,7 +193,7 @@ class CarInfo extends Component {
     if (car) {
       const form = updateFields(car, formdata)
       this.setState({ formdata: form, formType: "edit" });
-    } else {
+    } else {      
       this.setState({ formType: "add" });
     }
   };

@@ -35,7 +35,7 @@ export const getHeaders = () => {
   const headers = {
     headers: { "X-USER-TOKEN": token, "X-USER-EMAIL": email }
   };
-  return headers
+  return headers;
 };
 
 // new ID
@@ -54,11 +54,12 @@ export const nextId = data => {
 };
 
 //make new object
-export const makeNewObject = (arr, newArr, name)=>{
-  arr.forEach(key=>{
-    newArr.push({
-      name: key[name]
-    })
-  })
-  return newArr; 
-}
+export const makeNewObject = (arr, newArr, name) => {
+  arr.forEach(key => {
+      newArr.push({
+        name: key[name],
+        id: key["id"]
+      });
+  });
+  return newArr;
+};
