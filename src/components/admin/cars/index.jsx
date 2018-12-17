@@ -24,7 +24,7 @@ class Cars extends Component {
       .then(res => {
         const list = res.data.sort((a, b) =>
           a.id > b.id ? 1 : b.id > a.id ? -1 : 0
-        );
+        ).reverse();
         this.setState({ cars: list, isLoading: false });
       });
   }
@@ -60,7 +60,7 @@ class Cars extends Component {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {this.state.cars.reverse().map((item, i) => (
+                {this.state.cars.map((item, i) => (
                   <TableRow key={i}>
                     <TableCell>{item.id}</TableCell>
                     <TableCell>

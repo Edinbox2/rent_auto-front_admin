@@ -30,9 +30,13 @@ class imageUploader extends Component {
     render() {
         return (
             <form onSubmit={this.SubmitFileUpload}>
-                <img src={this.props.img} alt="file name"
+            {this.props.img ? 
+            <img src={this.props.img} alt="file name"
                 style={{height: '200px'}}
-                /><br/>
+                /> : 
+                <h2>выберите изображение из списка</h2>
+        }
+                <br/>
                 <input type="file" onChange={this.updateFileInput}/>
                 <button onClick={this.SubmitFileUpload}>загрузить</button>
             </form>

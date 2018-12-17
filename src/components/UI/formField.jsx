@@ -31,7 +31,7 @@ const FormField = ({ formdata, id, change, className, submit, options }) => {
                   ? formdata.valid
                     ? "1px solid green"
                     : "1px solid red"
-                  : "1px solid #ccc"
+                  : "1px solid #ccc", 
               }}
               value={formdata.value}
               onChange={event => change({ event, id })}
@@ -41,6 +41,23 @@ const FormField = ({ formdata, id, change, className, submit, options }) => {
         );
         break;
 
+              case "textarea":
+              template = (
+                <div>
+                  {formdata.showLabel ? (
+                    <div className="car_edit_label">
+                    {formdata.config.label}
+                    </div> 
+                  ): null}
+                  <textarea name={id} id={id} 
+                  value={formdata.value}
+                  onChange={event => change({ event, id })}
+                  >                  
+                  </textarea> 
+                  {showError()}
+                </div>
+        
+              ); break;
       case "select":
         template = (
           <div>

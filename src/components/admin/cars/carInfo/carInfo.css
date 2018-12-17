@@ -7,9 +7,23 @@
 }
 
 .car_edit_form {
-    
-    width: 100%;    
+    margin-top: 20px;
+    width: 300px; 
+
 }
+
+.car_edit_form select,
+.car_edit_form textarea {
+
+    width: 340px; 
+
+}
+
+.car_edit_form textarea {
+    min-height: 100px;
+    padding: 5px 10px;
+}
+
 
 .edit_car_formField{
     display: block;
@@ -21,4 +35,22 @@
 
 .edit_car_formField:focus{
     outline: none;
+}
+
+.car_edit_label{
+    padding: 2px;
+     background: lightblue;
+     text-align: center;
+     font-size: 16px;
+     margin: 10px 0 5px;
+}
+
+.label_success {
+    font-size: 18px;
+    color: green;
+}
+
+.label_error{
+    font-size: 18px;
+    color: red;
 }

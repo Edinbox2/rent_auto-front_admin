@@ -4,34 +4,14 @@ import axios from "axios";
 // FIELD INITIAL UPDATE
 export const updateFields = (car, formdata) => {
   for (let key in formdata) {
-    switch (key) {
-      case "link":
-        formdata[key].value = car.link;
-        break;
-      case "name":
-        formdata[key].value = car.name;
-        break;
-      case "note":
-        formdata[key].value = car.note;
-        break;
-      case "style":
-        formdata[key].value = car.style;
-        break;
-      case "brand":
-        formdata[key].value = car.brand.name;
-        break;
-      case "rental":
-        formdata[key].value = car.rental.day_cost;
-        break;
-      case "model_class":
-        formdata[key].value = car.model_class.name;
-        break;
-      case "engine_volume":
-        formdata[key].value = car.engine_volume;
-        break;
-      default:
-        formdata[key].value = "";
+    formdata[key].value = car[key];
+    if (key === "brand" || key === "model_class") {
+      formdata[key].value = car[key].name;
     }
+    if (key === "rental") {
+      formdata[key].value = car[key].day_cost;
+    }
+    formdata[key].valid = true;
   }
   return formdata;
 };
@@ -48,13 +28,13 @@ export const updateField = (element, formdata) => {
   }
   const validData = validate(newElement);
   newElement.valid = validData[0];
-  newElement.validationMessage[1];
+  newElement.validationMessage = validData[1];
   formdata[element.id] = newElement;
   return formdata;
 };
 
 //SUBMIT FORM
-export const formIsValid = (car, carId, formdata) => {
+export const formIsValid = (carId, formdata) => {
   let dataToSubmit = {};
   let dataIsValid = true;
 
@@ -84,10 +64,7 @@ export const formIsValid = (car, carId, formdata) => {
           model,
           getHeaders()
         )
-        .then(res => {
-          console.log("success");
-          console.log(res.data);
-        });
+        .then(res => {});
     } else {
       model = {
         name: dataToSubmit.name,
@@ -101,12 +78,10 @@ export const formIsValid = (car, carId, formdata) => {
       };
       axios
         .post(`https://api.rent-auto.biz.tm/models`, model, getHeaders())
-        .then(res => {
-          console.log(res);
-        });
-      console.log("sent");
+        .then(res => {});
     }
+    return true;
   } else {
-    console.log("select all the fields");
+    return false;
   }
 };

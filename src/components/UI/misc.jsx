@@ -21,7 +21,7 @@ export const validate = element => {
 export const idValidation = (list, data) => {
   let valid = true;
   for (let i = 0; i < list.length; i++) {
-    if (data.id == list[i].id) {
+    if (data.id === list[i].id) {
       valid = false;
     }
   }

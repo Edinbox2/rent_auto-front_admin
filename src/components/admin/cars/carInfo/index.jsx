@@ -128,7 +128,7 @@ class CarInfo extends Component {
       },
       note: {
         value: "",
-        element: "input",
+        element: "textarea",
         config: {
           name: "note",
           type: "text",
@@ -209,10 +209,25 @@ class CarInfo extends Component {
   submitHander = event => {
     event.preventDefault();
     const formdata = {...this.state.formdata}
-    const car = this.state.car
     const carId = this.state.carId
-    formIsValid(car, carId, formdata)
+    let isValid = formIsValid(carId, formdata)
     this.setState({ formSubmit: true });
+    console.log(isValid)
+    if(isValid){
+      if(this.state.formType === 'add'){
+      this.setState({formSuccess: 'готово!'})
+      setTimeout(()=>{
+        this.props.history.push('/dashboard/cars')
+      }, 1000)
+    }else{
+      this.setState({formSuccess: 'изменения сохранены!', formError:  false})
+      setTimeout(()=>{
+       this.setState({formSuccess: ''})}, 2000)
+    }
+    }else {
+      this.setState({formError:  true})
+    }
+
   };
 
   render() {
