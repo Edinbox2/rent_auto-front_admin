@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import {FormField} from '../../../UI/formField';
 
+
 class Rentals extends Component {
     state={
         range_rates: [

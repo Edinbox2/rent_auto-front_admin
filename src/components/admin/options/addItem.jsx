@@ -78,7 +78,7 @@ class addItem extends Component {
               style={item.style}
               type={item.type}
               value={this.state.data[item.name]}
-              placeholder={item.name}
+              placeholder={item.header}
               name={item.name}
               className={
                 this.state.submit

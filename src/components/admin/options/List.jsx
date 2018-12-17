@@ -91,7 +91,7 @@ class List extends Component {
               <TableRow>
                 <TableCell>id</TableCell>
                 {data.map(item => (
-                  <TableCell key={item.name}>{item.name}</TableCell>
+                  <TableCell key={item.name}>{item.header}</TableCell>
                 ))}
                 <TableCell></TableCell>
               </TableRow>

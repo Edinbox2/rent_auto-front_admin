@@ -1,0 +1,49 @@
+[{
+    "id": 1,
+    "code": "в/д-lgса-осн",
+    "name": "выходные дни (седан-основной)",
+    "active": true,
+    "model_class_id": 1,
+    "rental_type_id": 1,
+    "days_slice_id": 1,
+    "rate": 0.83,
+    "note": "Выходные дни (седан-основной)",
+    "created_at": "2018-12-17T11:59:56.489Z",
+    "updated_at": "2018-12-17T11:59:56.489Z"
+}, {
+    "id": 2,
+    "code": "р/д-lgса-осн",
+    "name": "рабочие дни (седан-основной)",
+    "active": true,
+    "model_class_id": 1,
+    "rental_type_id": 1,
+    "days_slice_id": 2,
+    "rate": 0.94,
+    "note": "Рабочие дни (седан-основной)",
+    "created_at": "2018-12-17T11:59:56.493Z",
+    "updated_at": "2018-12-17T11:59:56.493Z"
+}, {
+    "id": 3,
+    "code": "н/г-lgса-осн",
+    "name": "новый год (седан-основной)",
+    "active": true,
+    "model_class_id": 1,
+    "rental_type_id": 1,
+    "days_slice_id": 3,
+    "rate": 0.82,
+    "note": "Новый год (седан-основной)",
+    "created_at": "2018-12-17T11:59:56.495Z",
+    "updated_at": "2018-12-17T11:59:56.495Z"
+}, {
+    "id": 4,
+    "code": "м/п-lgса-осн",
+    "name": "майские праздники (седан-основной)",
+    "active": true,
+    "model_class_id": 1,
+    "rental_type_id": 1,
+    "days_slice_id": 4,
+    "rate": 1.0,
+    "note": "Майские праздники (седан-основной)",
+    "created_at": "2018-12-17T11:59:56.498Z",
+    "updated_at": "2018-12-17T11:59:56.498Z"
+}]

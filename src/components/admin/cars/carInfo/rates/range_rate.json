@@ -1,0 +1,37 @@
+[{
+    "id": 1,
+    "code": "д1-6-lgса-осн",
+    "name": "от 1 до 6 дней (седан-основной)",
+    "active": true,
+    "model_class_id": 1,
+    "rental_type_id": 1,
+    "days_range_id": 1,
+    "rate": 0.86,
+    "note": "от 1 до 6 дней (седан-основной)",
+    "created_at": "2018-12-17T11:59:56.383Z",
+    "updated_at": "2018-12-17T11:59:56.383Z"
+}, {
+    "id": 2,
+    "code": "д7-20-lgса-осн",
+    "name": "от 7 до 20 дней (седан-основной)",
+    "active": true,
+    "model_class_id": 1,
+    "rental_type_id": 1,
+    "days_range_id": 2,
+    "rate": 0.95,
+    "note": "от 7 до 20 дней (седан-основной)",
+    "created_at": "2018-12-17T11:59:56.386Z",
+    "updated_at": "2018-12-17T11:59:56.386Z"
+}, {
+    "id": 3,
+    "code": "д21+-lgса-осн",
+    "name": "от 21 дней (седан-основной)",
+    "active": true,
+    "model_class_id": 1,
+    "rental_type_id": 1,
+    "days_range_id": 3,
+    "rate": 0.85,
+    "note": "от 21 дней (седан-основной)",
+    "created_at": "2018-12-17T11:59:56.389Z",
+    "updated_at": "2018-12-17T11:59:56.389Z"
+}]

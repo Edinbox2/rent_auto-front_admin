@@ -34,7 +34,7 @@ class imageUploader extends Component {
             <img src={this.props.img} alt="file name"
                 style={{height: '200px'}}
                 /> : 
-                <h2>выберите изображение из списка</h2>
+                <h4>выберите изображение из списка</h4>
         }
                 <br/>
                 <input type="file" onChange={this.updateFileInput}/>

@@ -4,15 +4,15 @@ import FormField from "../../../UI/formField";
 import "./carInfo.css";
 import axios from "axios";
 import { data } from "./data";
-import { connect } from "react-redux";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { getHeaders, makeNewObject } from "../../../UI/misc";
-import * as action from "../../../../store/actions/edit";
 import ImageUploader from "./imageUploader";
-import {updateFields, updateField, formIsValid} from './utilities'; 
- 
+import { updateFields, updateField, formIsValid } from "./utilities";
+
 class CarInfo extends Component {
   state = {
     formType: "",
+    isLoading: true,
     carId: "",
     car: [],
     options: {
@@ -101,7 +101,7 @@ class CarInfo extends Component {
         element: "input",
         config: {
           name: "car_name",
-          type: "text",
+          type: "number",
           label: "Базовая цена"
         },
         validation: {
@@ -155,25 +155,24 @@ class CarInfo extends Component {
             car = res.data[key];
           }
         }
-        this.setState({ car, carId: id });
+        this.setState({ car, carId: id, isLoading: false });
         this.updateFormFields(car);
       });
 
     axios.get(`https://srv.rent-auto.biz.tm/images`, getHeaders()).then(res => {
       const id = this.props.match.params.id;
-      let images =[];
-      if(id){
+      let images = [];
+      if (id) {
         images = res.data.images.filter(key => {
-        if (key.resource_id == id) {
-          return true;
-        } else {
-          return false;
-        }
-      });
-      }else{
-        images = res.data.images
-      } 
-      console.log(images)
+          if (key.resource_id == id) {
+            return true;
+          } else {
+            return false;
+          }
+        });
+      } else {
+        images = res.data.images;
+      }
       const links = makeNewObject(images, [], "path");
       const options = { ...this.state.options };
       options.link = [...links];
@@ -188,19 +187,19 @@ class CarInfo extends Component {
     });
   }
 
-  updateFormFields = (car) => {
-    const formdata = {...this.state.formdata}
+  updateFormFields = car => {
+    const formdata = { ...this.state.formdata };
     if (car) {
-      const form = updateFields(car, formdata)
-      this.setState({ formdata: form, formType: "edit" });
-    } else {      
-      this.setState({ formType: "add" });
+      const form = updateFields(car, formdata);
+      this.setState({ formdata: form, formType: "Редактировать" });
+    } else {
+      this.setState({ formType: "Создать" });
     }
   };
 
   updateHandler = element => {
     const formdata = { ...this.state.formdata };
-    const form = updateField(element, formdata )
+    const form = updateField(element, formdata);
     this.setState({
       formdata: form
     });
@@ -208,85 +207,76 @@ class CarInfo extends Component {
 
   submitHander = event => {
     event.preventDefault();
-    const formdata = {...this.state.formdata}
-    const carId = this.state.carId
-    let isValid = formIsValid(carId, formdata)
+    const formdata = { ...this.state.formdata };
+    const carId = this.state.carId;
+    let isValid = formIsValid(carId, formdata);
     this.setState({ formSubmit: true });
-    console.log(isValid)
-    if(isValid){
-      if(this.state.formType === 'add'){
-      this.setState({formSuccess: 'готово!'})
-      setTimeout(()=>{
-        this.props.history.push('/dashboard/cars')
-      }, 1000)
-    }else{
-      this.setState({formSuccess: 'изменения сохранены!', formError:  false})
-      setTimeout(()=>{
-       this.setState({formSuccess: ''})}, 2000)
+    if (isValid) {
+      if (this.state.formType === "Создать") {
+        this.setState({ formSuccess: "готово!" });
+        setTimeout(() => {
+          this.props.history.push("/dashboard/cars");
+        }, 1000);
+      } else {
+        this.setState({
+          formSuccess: "изменения сохранены!",
+          formError: false
+        });
+        setTimeout(() => {
+          this.setState({ formSuccess: "" });
+        }, 1000);
+      }
+    } else {
+      this.setState({ formError: true });
     }
-    }else {
-      this.setState({formError:  true})
-    }
-
   };
 
   render() {
     return (
       <AdminLayout>
-        <div className="car_edit_container">
-          <h2>{this.state.formType}</h2>
-          <ImageUploader
-            id={this.state.carId}
-            img={this.state.formdata.link.value}
-          />        
-          <form
-            onSubmit={event => this.submitHander(event)}
-            className="car_edit_form"
-          >
-            {data.map((item, i) => (
-              <FormField
-                key={i}
-                className="edit_car_formField"
-                id={item.id}
-                formdata={this.state.formdata[item.id]}
-                change={element => this.updateHandler(element)}
-                submit={this.state.formSubmit}
-                options={this.state.options[item.id]}
-              />
-            ))}
+        {this.state.isLoading ? (
+          <div className="progress_cars">
+            <CircularProgress thikness={5} style={{ color: "lightblue" }} />
+          </div>
+        ) : (
+          <div className="car_edit_container">
+            <h2>{this.state.formType}</h2>
+            <ImageUploader
+              id={this.state.carId}
+              img={this.state.formdata.link.value}
+            />
+            <form
+              onSubmit={event => this.submitHander(event)}
+              className="car_edit_form"
+            >
+              {data.map((item, i) => (
+                <FormField
+                  key={i}
+                  className="edit_car_formField"
+                  id={item.id}
+                  formdata={this.state.formdata[item.id]}
+                  change={element => this.updateHandler(element)}
+                  submit={this.state.formSubmit}
+                  options={this.state.options[item.id]}
+                />
+              ))}
 
-            <div className="label_success">{this.state.formSuccess}</div>
-            {this.state.formError ? (
-              <div className="label_error">
-                что то пошло не так, повторите попытку
-              </div>
-            ) : (
-              ""
-            )}
-            <button onClick={event => this.submitHander(event)}>
-              {this.state.formType}
-            </button>
-          </form>
-        </div>
+              <div className="label_success">{this.state.formSuccess}</div>
+              {this.state.formError ? (
+                <div className="label_error">
+                  что то пошло не так, повторите попытку
+                </div>
+              ) : null}
+              <button onClick={event => this.submitHander(event)}>
+                {this.state.formType}
+              </button>
+            </form>
+          </div>
+        )}
       </AdminLayout>
     );
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    email: state.email,
-    token: state.token
-  };
-};
 
-const mapDispatchToProps = dispatch => {
-  return {
-    onSubmitForm: data => dispatch(action.submit(data))
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(CarInfo);
+export default CarInfo;
