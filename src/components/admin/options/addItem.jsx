@@ -20,7 +20,7 @@ class addItem extends Component {
     submit: false,
     valid: false,
     validId: true, 
-    message: ''
+    error: ''
   };
 
   changeHandler = (event, name) => {
@@ -56,20 +56,22 @@ class addItem extends Component {
             submit: false,
             valid: true,
             validId: true, 
-            message: ''
           });
         })
         .catch(error => {
+          this.setState({error})
         });
      
-    }else {
-      //заполните все поля
     }
   };
 
   render() {
     console.log(this.state.data.id)
     return (
+      <React.Fragment>
+        {this.state.error ? 
+        <TableRow><div className="error_message">{this.state.error}</div></TableRow> : null
+      }        
       <TableRow>
         <TableCell>id</TableCell>
         {data.map(item => (
@@ -78,7 +80,7 @@ class addItem extends Component {
               style={item.style}
               type={item.type}
               value={this.state.data[item.name]}
-              placeholder={item.header}
+              placeholder={item.name}
               name={item.name}
               className={
                 this.state.submit
@@ -97,6 +99,7 @@ class addItem extends Component {
           </button>
         </TableCell>
       </TableRow>
+      </React.Fragment>
     );
   }
 }

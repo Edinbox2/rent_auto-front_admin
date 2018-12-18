@@ -8,6 +8,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { getHeaders, makeNewObject } from "../../../UI/misc";
 import ImageUploader from "./imageUploader";
 import { updateFields, updateField, formIsValid } from "./utilities";
+import Rentals from "./rates/rental";
 
 class CarInfo extends Component {
   state = {
@@ -260,7 +261,7 @@ class CarInfo extends Component {
                   options={this.state.options[item.id]}
                 />
               ))}
-
+                
               <div className="label_success">{this.state.formSuccess}</div>
               {this.state.formError ? (
                 <div className="label_error">
@@ -271,12 +272,16 @@ class CarInfo extends Component {
                 {this.state.formType}
               </button>
             </form>
+            {this.state.formType === "Редактировать" ? (
+              <div className="rentals">
+                <Rentals id={this.state.carId} />
+              </div>
+            ) : null}
           </div>
         )}
       </AdminLayout>
     );
   }
 }
-
 
 export default CarInfo;

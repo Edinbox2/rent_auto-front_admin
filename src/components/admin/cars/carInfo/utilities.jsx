@@ -16,6 +16,14 @@ export const updateFields = (car, formdata) => {
   return formdata;
 };
 
+export const updateRental = (item, formdata)=>{
+  for(let key in formdata){
+    formdata[key].value = item[key]
+    formdata[key].valid = true
+  }
+  return formdata; 
+}
+
 // FIELD UPDATE
 export const updateField = (element, formdata) => {
   const newElement = { ...formdata[element.id] };
