@@ -30,14 +30,15 @@ class Cars extends Component {
   }
 
   deleteHandler = id => {
-    console.log(id)
+
     const array = this.state.cars;
+    if (window.confirm("удалить?")) {
     const filterArray = array.filter(item => {
       return item.id !== id;
     });
 
     this.setState({ cars: filterArray });
-    if (window.confirm("удалить?")) {
+    
       axios
         .delete(`https://api.rent-auto.biz.tm/models/${id}`, getHeaders())
         .then(res => {

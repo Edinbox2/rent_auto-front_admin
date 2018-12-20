@@ -7,7 +7,7 @@ import { data } from "./data";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { getHeaders, makeNewObject } from "../../../UI/misc";
 import ImageUploader from "./imageUploader";
-import { updateFields, updateField, formIsValid } from "./utilities";
+import { updateFields, updateField } from "./utilities";
 import Rentals from "./rates/rental";
 
 class CarInfo extends Component {
@@ -34,7 +34,7 @@ class CarInfo extends Component {
         validation: {
           required: true
         },
-        valid: true,
+        valid: false,
         validationMessage: "",
         showLabel: true
       },
@@ -49,7 +49,7 @@ class CarInfo extends Component {
         validation: {
           required: true
         },
-        valid: true,
+        valid: false,
         validationMessage: "",
         showLabel: true
       },
@@ -64,7 +64,7 @@ class CarInfo extends Component {
         validation: {
           required: true
         },
-        valid: true,
+        valid: false,
         validationMessage: "",
         showLabel: true
       },
@@ -78,7 +78,7 @@ class CarInfo extends Component {
         validation: {
           required: true
         },
-        valid: true,
+        valid: false,
         validationMessage: "",
         showLabel: true
       },
@@ -93,7 +93,7 @@ class CarInfo extends Component {
         validation: {
           required: true
         },
-        valid: true,
+        valid: false,
         validationMessage: "",
         showLabel: true
       },
@@ -108,7 +108,7 @@ class CarInfo extends Component {
         validation: {
           required: true
         },
-        valid: true,
+        valid: false,
         validationMessage: "",
         showLabel: true
       },
@@ -123,7 +123,7 @@ class CarInfo extends Component {
         validation: {
           required: true
         },
-        valid: true,
+        valid: false,
         validationMessage: "",
         showLabel: true
       },
@@ -136,7 +136,7 @@ class CarInfo extends Component {
           label: "Описание"
         },
         validation: {
-          required: true
+          required: false
         },
         valid: true,
         validationMessage: "",
@@ -146,10 +146,10 @@ class CarInfo extends Component {
   };
 
   componentDidMount() {
+    const id = this.props.match.params.id;
     axios
       .get(`https://api.rent-auto.biz.tm/info_models`, getHeaders())
       .then(res => {
-        const id = this.props.match.params.id;
         let car;
         for (let key in res.data) {
           if (res.data[key].id == id) {
@@ -160,25 +160,7 @@ class CarInfo extends Component {
         this.updateFormFields(car);
       });
 
-    axios.get(`https://srv.rent-auto.biz.tm/images`, getHeaders()).then(res => {
-      const id = this.props.match.params.id;
-      let images = [];
-      if (id) {
-        images = res.data.images.filter(key => {
-          if (key.resource_id == id) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-      } else {
-        images = res.data.images;
-      }
-      const links = makeNewObject(images, [], "path");
-      const options = { ...this.state.options };
-      options.link = [...links];
-      this.setState({ options });
-    });
+    this.getTheImages(id);
 
     axios.get(`https://api.rent-auto.biz.tm/brands`, getHeaders()).then(res => {
       const brands = makeNewObject(res.data, [], "name");
@@ -187,6 +169,26 @@ class CarInfo extends Component {
       this.setState({ options });
     });
   }
+
+  getTheImages = id => {
+    let images = [];
+    axios
+      .get(
+        `${
+          id
+            ? `https://srv.rent-auto.biz.tm/images/models/${id}}`
+            : `https://srv.rent-auto.biz.tm/images`
+        }`,
+        getHeaders()
+      )
+      .then(res => {
+        images = res.data.images;
+        const links = makeNewObject(images, [], "filename");
+        const options = { ...this.state.options };
+        options.link = [...links];
+        this.setState({ options });
+      });
+  };
 
   updateFormFields = car => {
     const formdata = { ...this.state.formdata };
@@ -206,17 +208,79 @@ class CarInfo extends Component {
     });
   };
 
+
+  formIsValid = (carId, formdata) => {
+    let dataToSubmit = {};
+    let dataIsValid = true;
+    for (let key in formdata) {
+      dataToSubmit[key] = formdata[key].value;
+      dataIsValid = formdata[key].valid && dataIsValid;
+    }
+    if (dataIsValid) {
+      let model;
+      
+      if (carId) {
+        model = {
+          id: carId,
+          name: dataToSubmit.name,
+          link: dataToSubmit.link,
+          style: dataToSubmit.style,
+          engine_volume: dataToSubmit.engine_volume,
+          note: dataToSubmit.note,
+          model_class: { id: carId, name: dataToSubmit.model_class },
+          brand: { name: dataToSubmit.brand },
+          rentals: [{ id: carId, day_cost: dataToSubmit.rental }]
+        };
+  
+        axios
+          .patch(
+            `https://api.rent-auto.biz.tm/models/${model.id}`,
+            model,
+            getHeaders()
+          )
+          .then(res => {});
+      } else {
+        model = {
+          name: dataToSubmit.name,
+          link: dataToSubmit.link,
+          style: dataToSubmit.style,
+          engine_volume: dataToSubmit.engine_volume,
+          note: dataToSubmit.note,
+          model_class: { name: dataToSubmit.model_class },
+          brand: { name: dataToSubmit.brand },
+          rentals: [{ day_cost: dataToSubmit.rental }]
+        };
+        this.setState({isLoading: true})
+        axios
+          .post(`https://api.rent-auto.biz.tm/models`, model, getHeaders())
+          .then(res => {
+            
+            const newCarId = res.data.id
+            console.log(newCarId)
+            this.setState({isLoading: false, carId: newCarId})
+            return newCarId 
+          });
+      }      
+    } else {
+      return false;
+    }
+  };
+
   submitHander = event => {
     event.preventDefault();
     const formdata = { ...this.state.formdata };
-    const carId = this.state.carId;
-    let isValid = formIsValid(carId, formdata);
+    let carId = this.state.carId;
+    let isValid = this.formIsValid(carId, formdata);
     this.setState({ formSubmit: true });
+    console.log(this.state.carId)
+    if(this.state.carId){
+      console.log(this.state.carId)
+    }
     if (isValid) {
       if (this.state.formType === "Создать") {
         this.setState({ formSuccess: "готово!" });
         setTimeout(() => {
-          this.props.history.push("/dashboard/cars");
+          // this.props.history.push("/dashboard/cars");
         }, 1000);
       } else {
         this.setState({
@@ -261,7 +325,7 @@ class CarInfo extends Component {
                   options={this.state.options[item.id]}
                 />
               ))}
-                
+
               <div className="label_success">{this.state.formSuccess}</div>
               {this.state.formError ? (
                 <div className="label_error">

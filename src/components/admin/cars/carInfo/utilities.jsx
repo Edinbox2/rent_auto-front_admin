@@ -28,7 +28,7 @@ export const updateRental = (item, formdata)=>{
 export const updateField = (element, formdata) => {
   const newElement = { ...formdata[element.id] };
   if (element.id === "link") {
-    newElement.value = `https://srv.rent-auto.biz.tm/${
+    newElement.value = `https://srv.rent-auto.biz.tm/images/models/1/${
       element.event.target.value
     }`;
   } else {
@@ -45,7 +45,6 @@ export const updateField = (element, formdata) => {
 export const formIsValid = (carId, formdata) => {
   let dataToSubmit = {};
   let dataIsValid = true;
-
   for (let key in formdata) {
     dataToSubmit[key] = formdata[key].value;
     dataIsValid = formdata[key].valid && dataIsValid;
@@ -86,9 +85,9 @@ export const formIsValid = (carId, formdata) => {
       };
       axios
         .post(`https://api.rent-auto.biz.tm/models`, model, getHeaders())
-        .then(res => {});
+        .then(res => {carId = res.data.id});
     }
-    return true;
+    return carId;
   } else {
     return false;
   }

@@ -56,10 +56,19 @@ export const nextId = data => {
 //make new object
 export const makeNewObject = (arr, newArr, name) => {
   arr.forEach(key => {
+    if(name === "filename") {
+      newArr.push({
+        name: key[name],
+        path: key["path"],
+        id: key['resource_id']
+      });
+    }else {
       newArr.push({
         name: key[name],
         id: key["id"]
       });
+    }
+      
   });
   return newArr;
 };
