@@ -13,6 +13,7 @@ import Rentals from "./rates/rental";
 class CarInfo extends Component {
   state = {
     formType: "",
+    file: null,
     isLoading: true,
     carId: "",
     car: [],
@@ -250,16 +251,16 @@ class CarInfo extends Component {
           brand: { name: dataToSubmit.brand },
           rentals: [{ day_cost: dataToSubmit.rental }]
         };
-        this.setState({isLoading: true})
+        
         axios
           .post(`https://api.rent-auto.biz.tm/models`, model, getHeaders())
           .then(res => {
             
             const newCarId = res.data.id
-            console.log(newCarId)
-            this.setState({isLoading: false, carId: newCarId})
-            return newCarId 
+           
+            this.uploadImage(newCarId)
           });
+          return true 
       }      
     } else {
       return false;
@@ -272,10 +273,6 @@ class CarInfo extends Component {
     let carId = this.state.carId;
     let isValid = this.formIsValid(carId, formdata);
     this.setState({ formSubmit: true });
-    console.log(this.state.carId)
-    if(this.state.carId){
-      console.log(this.state.carId)
-    }
     if (isValid) {
       if (this.state.formType === "Создать") {
         this.setState({ formSuccess: "готово!" });
@@ -296,7 +293,29 @@ class CarInfo extends Component {
     }
   };
 
+  
+  uploadImage=(id)=>{
+    if (id) {
+    const fd = new FormData();
+    const image = this.state.file.name;
+    const data = this.state.file;
+    fd.append("file", data, image);
+    axios
+      .post(
+        `https://srv.rent-auto.biz.tm/images/models/${id}`,
+        fd,
+        getHeaders()
+      )
+      .then(res => {});
+  }
+  }
+  updateFile=(file)=>{
+   
+    this.setState({file})
+  }
+
   render() {
+    console.log(this.state.carId)
     return (
       <AdminLayout>
         {this.state.isLoading ? (
@@ -309,6 +328,7 @@ class CarInfo extends Component {
             <ImageUploader
               id={this.state.carId}
               img={this.state.formdata.link.value}
+              updateFile={(file)=>this.updateFile(file)}
             />
             <form
               onSubmit={event => this.submitHander(event)}

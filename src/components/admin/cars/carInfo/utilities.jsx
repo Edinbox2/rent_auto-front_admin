@@ -1,6 +1,7 @@
 import { validate, getHeaders } from "../../../UI/misc";
 import axios from "axios";
 
+
 // FIELD INITIAL UPDATE
 export const updateFields = (car, formdata) => {
   for (let key in formdata) {
@@ -16,6 +17,8 @@ export const updateFields = (car, formdata) => {
   return formdata;
 };
 
+
+// UPDATE RENTAL
 export const updateRental = (item, formdata)=>{
   for(let key in formdata){
     formdata[key].value = item[key]
@@ -23,6 +26,7 @@ export const updateRental = (item, formdata)=>{
   }
   return formdata; 
 }
+
 
 // FIELD UPDATE
 export const updateField = (element, formdata) => {
@@ -40,6 +44,7 @@ export const updateField = (element, formdata) => {
   formdata[element.id] = newElement;
   return formdata;
 };
+
 
 //SUBMIT FORM
 export const formIsValid = (carId, formdata) => {
@@ -92,3 +97,4 @@ export const formIsValid = (carId, formdata) => {
     return false;
   }
 };
+

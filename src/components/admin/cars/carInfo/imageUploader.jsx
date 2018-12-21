@@ -11,16 +11,17 @@ class imageUploader extends Component {
     this.setState({
       uploadedFile: event.target.files[0]
     });
+    this.props.updateFile(event.target.files[0])
   };
-
-  componentWillUpdate(nextProps){
-      if(nextProps.id){
-        this.SubmitFileUpload  
-        console.log('success')
-      }else{
-          console.log('failed')
-      }      
-  }
+  
+  // сomponentWillRecieveProps(nextProps){
+  //     if(this.props.id || nextProps.id){
+  //       this.SubmitFileUpload  
+  //       console.log('success')
+  //     }else{
+  //         console.log('failed')
+  //     }      
+  // }
   SubmitFileUpload = e => {
     e.preventDefault();
     if (this.props.id) {
@@ -36,11 +37,13 @@ class imageUploader extends Component {
           getHeaders()
         )
         .then(res => {});
+    }else{
+
     }
   };
 
   render() {
-      console.log(this.state.carId)
+      console.log(this.props.id)
     return (
       <form onSubmit={this.SubmitFileUpload}>
         {this.props.img ? (
