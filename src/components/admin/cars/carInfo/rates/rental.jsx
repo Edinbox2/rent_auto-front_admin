@@ -35,28 +35,37 @@ class Rentals extends Component {
   
   submitForm = e => {
     e.preventDefault();
+   
+   const data={
+     id: this.state.id,
+     range_rates: [this.state.newopt.range_rates], 
+     slice_rates: [this.state.newopt.slice_rates]  
+   }
+   console.log(data)
     this.setState({ formSubmit: true });
-    axios.patch(`https://api.rent-auto.biz.tm/info_models/${this.state.id}`, getHeaders()).then(res=>{
+    axios.patch(`https://api.rent-auto.biz.tm/info_models/${this.state.id}`,  data, getHeaders()).then(res=>{
         console.log(res.data)
     })
   };
 
-  inputHandler=(event, name, index)=>{
+  inputHandler=(event, name, index, arr)=>{
     const obj = {...this.state.newopt}
-    const range_rates = {...obj['range_rates']}
-    const item = range_rates[index]
+    const array = {...obj[arr]}
+    const item = array[index]
     item[name] = event.target.value
-    range_rates[index] = item
-    obj['range_rates'] = range_rates
+    array[index] = item
+    obj[arr] = array
     this.setState({newopt: obj})
   }
 
   render() {
+    console.log(this.state.newopt.range_rates)
+    console.log(this.state.newopt.slice_rates)
     return (
       <div className="rental">
+        <form onSubmit={this.submitForm}>
         <hr />
         <h2>Rental rate</h2>
-        <form onSubmit={this.submitForm}>
           {
             this.state.options.range_rates? 
             this.state.options.range_rates.map((item, i) => (
@@ -64,9 +73,25 @@ class Rentals extends Component {
               key={i}
               index={i}
               id={item.id}
+              arr='range_rates'
               item={item}
               submit={this.state.formSubmit}
-              inputHandler={(event, name, index) =>this.inputHandler(event, name, index)}
+              inputHandler={(event, name, index, arr) =>this.inputHandler(event, name, index, arr)}
+            />
+          )): null}
+          <hr />
+        <h2>Slice rate</h2>
+          {
+            this.state.options.slice_rates? 
+            this.state.options.slice_rates.map((item, i) => (
+            <RentalItem
+              key={i}
+              index={i}
+              id={item.id}
+              arr='slice_rates'
+              item={item}
+              submit={this.state.formSubmit}
+              inputHandler={(event, name, index, arr) =>this.inputHandler(event, name, index, arr)}
             />
           )): null}
           <button onSubmit={this.submitForm}>sent</button>
