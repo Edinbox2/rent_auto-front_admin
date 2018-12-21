@@ -11,21 +11,12 @@ class imageUploader extends Component {
     this.setState({
       uploadedFile: event.target.files[0]
     });
-    this.props.updateFile(event.target.files[0])
+    this.props.updateFile(event.target.files[0]);
   };
-  
-  // сomponentWillRecieveProps(nextProps){
-  //     if(this.props.id || nextProps.id){
-  //       this.SubmitFileUpload  
-  //       console.log('success')
-  //     }else{
-  //         console.log('failed')
-  //     }      
-  // }
+
   SubmitFileUpload = e => {
     e.preventDefault();
     if (this.props.id) {
-        console.log(this.props.id)
       const fd = new FormData();
       const image = this.state.uploadedFile.name;
       const data = this.state.uploadedFile;
@@ -37,13 +28,10 @@ class imageUploader extends Component {
           getHeaders()
         )
         .then(res => {});
-    }else{
-
     }
   };
 
   render() {
-      console.log(this.props.id)
     return (
       <form onSubmit={this.SubmitFileUpload}>
         {this.props.img ? (
@@ -57,7 +45,9 @@ class imageUploader extends Component {
         )}
         <br />
         <input type="file" onChange={this.updateFileInput} />
-        <button onClick={this.SubmitFileUpload}>загрузить</button>
+        {this.props.id ? (
+          <button onClick={this.SubmitFileUpload}>загрузить</button>
+        ) : null}
       </form>
     );
   }

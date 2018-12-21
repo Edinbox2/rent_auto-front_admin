@@ -7,7 +7,7 @@ import { data } from "./data";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { getHeaders, makeNewObject } from "../../../UI/misc";
 import ImageUploader from "./imageUploader";
-import { updateFields, updateField } from "./utilities";
+import { updateFields, updateField, formIsValid } from "./utilities";
 import Rentals from "./rates/rental";
 
 class CarInfo extends Component {
@@ -203,81 +203,23 @@ class CarInfo extends Component {
 
   updateHandler = element => {
     const formdata = { ...this.state.formdata };
-    const form = updateField(element, formdata);
+    const form = updateField(element, formdata, this.state.carId);
     this.setState({
       formdata: form
     });
-  };
-
-
-  formIsValid = (carId, formdata) => {
-    let dataToSubmit = {};
-    let dataIsValid = true;
-    for (let key in formdata) {
-      dataToSubmit[key] = formdata[key].value;
-      dataIsValid = formdata[key].valid && dataIsValid;
-    }
-    if (dataIsValid) {
-      let model;
-      
-      if (carId) {
-        model = {
-          id: carId,
-          name: dataToSubmit.name,
-          link: dataToSubmit.link,
-          style: dataToSubmit.style,
-          engine_volume: dataToSubmit.engine_volume,
-          note: dataToSubmit.note,
-          model_class: { id: carId, name: dataToSubmit.model_class },
-          brand: { name: dataToSubmit.brand },
-          rentals: [{ id: carId, day_cost: dataToSubmit.rental }]
-        };
-  
-        axios
-          .patch(
-            `https://api.rent-auto.biz.tm/models/${model.id}`,
-            model,
-            getHeaders()
-          )
-          .then(res => {});
-      } else {
-        model = {
-          name: dataToSubmit.name,
-          link: dataToSubmit.link,
-          style: dataToSubmit.style,
-          engine_volume: dataToSubmit.engine_volume,
-          note: dataToSubmit.note,
-          model_class: { name: dataToSubmit.model_class },
-          brand: { name: dataToSubmit.brand },
-          rentals: [{ day_cost: dataToSubmit.rental }]
-        };
-        
-        axios
-          .post(`https://api.rent-auto.biz.tm/models`, model, getHeaders())
-          .then(res => {
-            
-            const newCarId = res.data.id
-           
-            this.uploadImage(newCarId)
-          });
-          return true 
-      }      
-    } else {
-      return false;
-    }
   };
 
   submitHander = event => {
     event.preventDefault();
     const formdata = { ...this.state.formdata };
     let carId = this.state.carId;
-    let isValid = this.formIsValid(carId, formdata);
+    let isValid = formIsValid(carId, formdata, this.uploadImage);
     this.setState({ formSubmit: true });
     if (isValid) {
       if (this.state.formType === "Создать") {
         this.setState({ formSuccess: "готово!" });
         setTimeout(() => {
-          // this.props.history.push("/dashboard/cars");
+          this.props.history.push("/dashboard/cars");
         }, 1000);
       } else {
         this.setState({
@@ -293,29 +235,26 @@ class CarInfo extends Component {
     }
   };
 
-  
-  uploadImage=(id)=>{
+  uploadImage = id => {
     if (id) {
-    const fd = new FormData();
-    const image = this.state.file.name;
-    const data = this.state.file;
-    fd.append("file", data, image);
-    axios
-      .post(
-        `https://srv.rent-auto.biz.tm/images/models/${id}`,
-        fd,
-        getHeaders()
-      )
-      .then(res => {});
-  }
-  }
-  updateFile=(file)=>{
-   
-    this.setState({file})
-  }
+      const fd = new FormData();
+      const image = this.state.file.name;
+      const data = this.state.file;
+      fd.append("file", data, image);
+      axios
+        .post(
+          `https://srv.rent-auto.biz.tm/images/models/${id}`,
+          fd,
+          getHeaders()
+        )
+        .then(res => {});
+    }
+  };
+  updateFile = file => {
+    this.setState({ file });
+  };
 
   render() {
-    console.log(this.state.carId)
     return (
       <AdminLayout>
         {this.state.isLoading ? (
@@ -328,7 +267,7 @@ class CarInfo extends Component {
             <ImageUploader
               id={this.state.carId}
               img={this.state.formdata.link.value}
-              updateFile={(file)=>this.updateFile(file)}
+              updateFile={file => this.updateFile(file)}
             />
             <form
               onSubmit={event => this.submitHander(event)}

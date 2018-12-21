@@ -1,6 +1,6 @@
 import { validate, getHeaders } from "../../../UI/misc";
-import axios from "axios";
 
+import axios from "axios";
 
 // FIELD INITIAL UPDATE
 export const updateFields = (car, formdata) => {
@@ -17,22 +17,20 @@ export const updateFields = (car, formdata) => {
   return formdata;
 };
 
-
 // UPDATE RENTAL
-export const updateRental = (item, formdata)=>{
-  for(let key in formdata){
-    formdata[key].value = item[key]
-    formdata[key].valid = true
+export const updateRental = (item, formdata) => {
+  for (let key in formdata) {
+    formdata[key].value = item[key];
+    formdata[key].valid = true;
   }
-  return formdata; 
-}
-
+  return formdata;
+};
 
 // FIELD UPDATE
-export const updateField = (element, formdata) => {
+export const updateField = (element, formdata, id) => {
   const newElement = { ...formdata[element.id] };
   if (element.id === "link") {
-    newElement.value = `https://srv.rent-auto.biz.tm/images/models/1/${
+    newElement.value = `https://srv.rent-auto.biz.tm/images/models/${id}/${
       element.event.target.value
     }`;
   } else {
@@ -45,9 +43,8 @@ export const updateField = (element, formdata) => {
   return formdata;
 };
 
-
 //SUBMIT FORM
-export const formIsValid = (carId, formdata) => {
+export const formIsValid = (carId, formdata, uploadImage) => {
   let dataToSubmit = {};
   let dataIsValid = true;
   for (let key in formdata) {
@@ -88,13 +85,17 @@ export const formIsValid = (carId, formdata) => {
         brand: { name: dataToSubmit.brand },
         rentals: [{ day_cost: dataToSubmit.rental }]
       };
+
       axios
         .post(`https://api.rent-auto.biz.tm/models`, model, getHeaders())
-        .then(res => {carId = res.data.id});
+        .then(res => {
+          const newCarId = res.data.id;
+
+          uploadImage(newCarId);
+        });
+      return true;
     }
-    return carId;
   } else {
     return false;
   }
 };
-
