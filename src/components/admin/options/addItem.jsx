@@ -66,7 +66,6 @@ class addItem extends Component {
   };
 
   render() {
-    console.log(this.state.data.id)
     return (
       <React.Fragment>
         {this.state.error ? 

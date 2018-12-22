@@ -65,7 +65,6 @@ class List extends Component {
   };
 
   render() {
-    console.log(this.state.lastId)
     const stateList = this.getState();
     const list = (
       <React.Fragment>

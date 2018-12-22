@@ -148,6 +148,8 @@ class CarInfo extends Component {
 
   componentDidMount() {
     const id = this.props.match.params.id;
+
+    // CAR DATA
     axios
       .get(`https://api.rent-auto.biz.tm/info_models`, getHeaders())
       .then(res => {
@@ -158,11 +160,15 @@ class CarInfo extends Component {
           }
         }
         this.setState({ car, carId: id, isLoading: false });
+
+        //INITIAL TEXT FIELD UPDATE
         this.updateFormFields(car);
       });
 
+    // SELECT ITEM - LIST OF IMAGES  
     this.getTheImages(id);
 
+    //BRANDS
     axios.get(`https://api.rent-auto.biz.tm/brands`, getHeaders()).then(res => {
       const brands = makeNewObject(res.data, [], "name");
       const options = { ...this.state.options };
@@ -171,6 +177,7 @@ class CarInfo extends Component {
     });
   }
 
+  // REQUEST THE LIST OF IMAGES
   getTheImages = id => {
     let images = [];
     axios
@@ -191,6 +198,7 @@ class CarInfo extends Component {
       });
   };
 
+// INITIAL TEXT FIELD UPDATE
   updateFormFields = car => {
     const formdata = { ...this.state.formdata };
     if (car) {
@@ -201,6 +209,7 @@ class CarInfo extends Component {
     }
   };
 
+  // UPDATE THE TEXT FIELDS
   updateHandler = element => {
     const formdata = { ...this.state.formdata };
     const form = updateField(element, formdata, this.state.carId);
@@ -209,6 +218,7 @@ class CarInfo extends Component {
     });
   };
 
+  // SUBMIT THE CAR INFO FORM
   submitHander = event => {
     event.preventDefault();
     const formdata = { ...this.state.formdata };
@@ -235,6 +245,7 @@ class CarInfo extends Component {
     }
   };
 
+  // UPLOAD AN IMAGE AT THE CREATE CAR OPTION 
   uploadImage = id => {
     if (id) {
       const fd = new FormData();
@@ -250,6 +261,8 @@ class CarInfo extends Component {
         .then(res => {});
     }
   };
+
+  // SELECT A PICTURE TO UPLOAD
   updateFile = file => {
     this.setState({ file });
   };
@@ -292,7 +305,7 @@ class CarInfo extends Component {
                 </div>
               ) : null}
               <button onClick={event => this.submitHander(event)}>
-                {this.state.formType}
+                Применить
               </button>
             </form>
             {this.state.formType === "Редактировать" ? (
