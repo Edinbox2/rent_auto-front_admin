@@ -4,8 +4,10 @@ import axios from "axios";
 
 // FIELD INITIAL UPDATE
 export const updateFields = (car, formdata) => {
+  
   for (let key in formdata) {
     formdata[key].value = car[key];
+
     if (key === "brand" || key === "model_class") {
       formdata[key].value = car[key].name;
     }
@@ -16,6 +18,16 @@ export const updateFields = (car, formdata) => {
   }
   return formdata;
 };
+
+export const populateFormRates=(array, formdata)=>{
+  for(let key in formdata){
+    for (let i in formdata[key]) {
+      formdata[key][i].value = array[key][i].rate;
+      formdata[key][i].valid = true;
+    }  
+  }    
+  return formdata;
+}
 
 // UPDATE RENTAL
 export const updateRental = (item, formdata) => {
@@ -43,7 +55,42 @@ export const updateField = (element, formdata, id) => {
   return formdata;
 };
 
-//SUBMIT FORM
+//SUBMIT RATES FROM
+
+export const formIsValidRates = (id, formdata, options) => {
+  let dataIsValid = true;
+
+  for(let key in formdata){
+    for (let i in formdata[key]) {
+      options[key][i].rate = formdata[key][i].value;
+      dataIsValid = formdata[key][i].valid && dataIsValid;
+    } 
+  }
+  
+  if (dataIsValid) {
+    const data = {
+      id: id,
+      ...{ ...options }
+    };  
+    axios
+      .patch(
+        `https://api.rent-auto.biz.tm/info_models/${id}`,
+        data,
+        getHeaders()
+      )
+      .then(res => {
+        console.log(res.data);
+      });
+    console.log('form is valid')
+    return true;
+  } else {
+    
+    return false;
+  }
+};
+
+
+//SUBMIT CAR FORM
 export const formIsValid = (carId, formdata, uploadImage) => {
   let dataToSubmit = {};
   let dataIsValid = true;

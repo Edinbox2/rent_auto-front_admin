@@ -2,3 +2,14 @@
     margin-top: 20px;
     width: 300px;
 }
+
+
+.danger{
+    color: red; 
+    font-size: 16px;
+}
+
+.success{
+    color:green;
+    font-size: 16px;
+}

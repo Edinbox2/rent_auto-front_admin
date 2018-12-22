@@ -8,7 +8,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import { getHeaders, makeNewObject } from "../../../UI/misc";
 import ImageUploader from "./imageUploader";
 import { updateFields, updateField, formIsValid } from "./utilities";
-import Rentals from "./rates/rental";
+import Rentals from "./rates/";
 
 class CarInfo extends Component {
   state = {
