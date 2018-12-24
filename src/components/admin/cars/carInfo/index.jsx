@@ -17,6 +17,7 @@ class CarInfo extends Component {
     isLoading: true,
     carId: "",
     car: [],
+    images: null,
     options: {
       link: [],
       brand: []
@@ -165,7 +166,7 @@ class CarInfo extends Component {
         this.updateFormFields(car);
       });
 
-    // SELECT ITEM - LIST OF IMAGES  
+    // SELECT ITEM - LIST OF IMAGES
     this.getTheImages(id);
 
     //BRANDS
@@ -194,11 +195,11 @@ class CarInfo extends Component {
         const links = makeNewObject(images, [], "filename");
         const options = { ...this.state.options };
         options.link = [...links];
-        this.setState({ options });
+        this.setState({ options, images });
       });
   };
 
-// INITIAL TEXT FIELD UPDATE
+  // INITIAL TEXT FIELD UPDATE
   updateFormFields = car => {
     const formdata = { ...this.state.formdata };
     if (car) {
@@ -212,7 +213,12 @@ class CarInfo extends Component {
   // UPDATE THE TEXT FIELDS
   updateHandler = element => {
     const formdata = { ...this.state.formdata };
-    const form = updateField(element, formdata, this.state.carId);
+    const form = updateField(
+      element,
+      formdata,
+      this.state.carId,
+      this.state.images
+    );
     this.setState({
       formdata: form
     });
@@ -241,24 +247,28 @@ class CarInfo extends Component {
         }, 1000);
       }
     } else {
+      console.log("error");
       this.setState({ formError: true });
     }
   };
 
-  // UPLOAD AN IMAGE AT THE CREATE CAR OPTION 
+  // UPLOAD AN IMAGE AT THE CREATE CAR OPTION
   uploadImage = id => {
     if (id) {
-      const fd = new FormData();
-      const image = this.state.file.name;
-      const data = this.state.file;
-      fd.append("file", data, image);
-      axios
-        .post(
-          `https://srv.rent-auto.biz.tm/images/models/${id}`,
-          fd,
-          getHeaders()
-        )
-        .then(res => {});
+      if (this.state.file) {
+        const fd = new FormData();
+        const image = this.state.file.name;
+        const data = this.state.file;
+        fd.append("file", data, image);
+        console.log(data);
+        axios
+          .post(
+            `https://srv.rent-auto.biz.tm/images/models/${id}`,
+            fd,
+            getHeaders()
+          )
+          .then(res => {});
+      }
     }
   };
 
@@ -268,6 +278,7 @@ class CarInfo extends Component {
   };
 
   render() {
+    console.log(this.state.file);
     return (
       <AdminLayout>
         {this.state.isLoading ? (

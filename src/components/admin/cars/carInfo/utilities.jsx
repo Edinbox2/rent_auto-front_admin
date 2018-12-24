@@ -39,12 +39,26 @@ export const updateRental = (item, formdata) => {
 };
 
 // FIELD UPDATE
-export const updateField = (element, formdata, id) => {
+export const updateField = (element, formdata, id, images) => {
   const newElement = { ...formdata[element.id] };
   if (element.id === "link") {
-    newElement.value = `https://srv.rent-auto.biz.tm/images/models/${id}/${
+    if(id){
+      newElement.value = `https://srv.rent-auto.biz.tm/images/models/${id}/${
       element.event.target.value
     }`;
+    }else{
+      let imgId = null 
+      images.filter(item=>{
+        if(item.filename == element.event.target.value){
+          imgId = item.resource_id
+        }
+      })
+      console.log(imgId)
+      newElement.value = `https://srv.rent-auto.biz.tm/images/models/${imgId}/${
+        element.event.target.value
+      }`;
+    }
+    
   } else {
     newElement.value = element.event.target.value;
   }
@@ -98,6 +112,7 @@ export const formIsValid = (carId, formdata, uploadImage) => {
     dataToSubmit[key] = formdata[key].value;
     dataIsValid = formdata[key].valid && dataIsValid;
   }
+  console.log(dataIsValid)
   if (dataIsValid) {
     let model;
 
@@ -121,6 +136,7 @@ export const formIsValid = (carId, formdata, uploadImage) => {
           getHeaders()
         )
         .then(res => {});
+        return true;
     } else {
       model = {
         name: dataToSubmit.name,
@@ -137,7 +153,6 @@ export const formIsValid = (carId, formdata, uploadImage) => {
         .post(`https://api.rent-auto.biz.tm/models`, model, getHeaders())
         .then(res => {
           const newCarId = res.data.id;
-
           uploadImage(newCarId);
         });
       return true;
