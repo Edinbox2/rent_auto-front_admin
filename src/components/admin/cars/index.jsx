@@ -22,27 +22,35 @@ class Cars extends Component {
     axios
       .get(`https://api.rent-auto.biz.tm/info_models`, getHeaders())
       .then(res => {
-        const list = res.data.sort((a, b) =>
-          a.id > b.id ? 1 : b.id > a.id ? -1 : 0
-        ).reverse();
+        const list = res.data
+          .sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0))
+          .reverse();
         this.setState({ cars: list, isLoading: false });
       });
   }
 
   deleteHandler = id => {
-
     const array = this.state.cars;
     if (window.confirm("удалить?")) {
-    const filterArray = array.filter(item => {
-      return item.id !== id;
-    });
+      const filterArray = array.filter(item => {
+        return item.id !== id;
+      });
 
-    this.setState({ cars: filterArray });
-    
+      this.setState({ cars: filterArray });
+
       axios
         .delete(`https://api.rent-auto.biz.tm/models/${id}`, getHeaders())
         .then(res => {
           console.log("item has been removed");
+        });
+
+      axios
+        .delete(
+          `https://srv.rent-auto.biz.tm/images/models/${id}`,
+          getHeaders()
+        )
+        .then(res => {
+          console.log("image has been removed");
         });
     }
   };
@@ -70,9 +78,7 @@ class Cars extends Component {
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <button
-                        onClick={ () => this.deleteHandler(item.id)}
-                      >
+                      <button onClick={() => this.deleteHandler(item.id)}>
                         <i className="large material-icons">delete</i>
                       </button>
                     </TableCell>

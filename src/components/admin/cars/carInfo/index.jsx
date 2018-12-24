@@ -247,7 +247,6 @@ class CarInfo extends Component {
         }, 1000);
       }
     } else {
-      console.log("error");
       this.setState({ formError: true });
     }
   };
@@ -260,7 +259,6 @@ class CarInfo extends Component {
         const image = this.state.file.name;
         const data = this.state.file;
         fd.append("file", data, image);
-        console.log(data);
         axios
           .post(
             `https://srv.rent-auto.biz.tm/images/models/${id}`,
@@ -278,7 +276,6 @@ class CarInfo extends Component {
   };
 
   render() {
-    console.log(this.state.file);
     return (
       <AdminLayout>
         {this.state.isLoading ? (

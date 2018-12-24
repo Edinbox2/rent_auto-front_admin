@@ -109,7 +109,6 @@ class RentalRates extends Component {
     axios
       .get(`https://api.rent-auto.biz.tm/info_models/${id}`, getHeaders())
       .then(res => {
-        console.log(res.data);
         const options = { ...this.state.options };
         const formdata = { ...this.state.formdata };
 
@@ -146,7 +145,7 @@ class RentalRates extends Component {
     const options = { ...this.state.options };
 
     let isValid = formIsValidRates(this.props.id, formdata, options);
-    console.log(isValid);
+
     this.setState({ formSubmit: true });
     if (isValid) {
       this.setState({ formError: false, formSuccess: true });

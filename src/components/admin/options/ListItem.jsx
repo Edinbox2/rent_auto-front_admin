@@ -34,7 +34,7 @@ class ListItem extends Component {
           const response = res.data
           this.props.onEditSubmit(response, this.props.id);
           }).catch(error =>{
-            console.log(error)
+            
           })
         
         this.setState({ edit: false });
