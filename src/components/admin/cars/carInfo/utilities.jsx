@@ -98,7 +98,7 @@ export const formIsValidRates = (id, formdata, options) => {
 };
 
 //SUBMIT CAR FORM
-export const formIsValid = (carId, formdata, uploadImage) => {
+export const formIsValid = (carId, formdata, uploadImage, selectedFile) => {
   let dataToSubmit = {};
   let dataIsValid = true;
   for (let key in formdata) {
@@ -113,7 +113,7 @@ export const formIsValid = (carId, formdata, uploadImage) => {
       model = {
         id: carId,
         name: dataToSubmit.name,
-        link: dataToSubmit.link,
+        link: selectedFile,
         style: dataToSubmit.style,
         engine_volume: dataToSubmit.engine_volume,
         note: dataToSubmit.note,
@@ -133,7 +133,7 @@ export const formIsValid = (carId, formdata, uploadImage) => {
     } else {
       model = {
         name: dataToSubmit.name,
-        link: dataToSubmit.link,
+        link: selectedFile,
         style: dataToSubmit.style,
         engine_volume: dataToSubmit.engine_volume,
         note: dataToSubmit.note,

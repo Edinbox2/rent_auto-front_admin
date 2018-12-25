@@ -6,7 +6,7 @@ import axios from "axios";
 import { data } from "./data";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { getHeaders, makeNewObject } from "../../../UI/misc";
-import ImageUploader from "./imageUploader";
+import ImageUploader from "./uploader";
 import { updateFields, updateField, formIsValid } from "./utilities";
 import Rentals from "./rates/";
 
@@ -17,6 +17,7 @@ class CarInfo extends Component {
     isLoading: true,
     carId: "",
     car: [],
+    selectedFile: '',
     images: null,
     options: {
       link: [],
@@ -26,20 +27,7 @@ class CarInfo extends Component {
     formError: false,
     formSuccess: "",
     formdata: {
-      link: {
-        value: "",
-        element: "select",
-        config: {
-          name: "link",
-          label: "Модели"
-        },
-        validation: {
-          required: true
-        },
-        valid: false,
-        validationMessage: "",
-        showLabel: true
-      },
+     
       name: {
         value: "",
         element: "input",
@@ -160,8 +148,13 @@ class CarInfo extends Component {
             car = res.data[key];
           }
         }
+        if(car){
+          this.setState({selectedFile: car.link})
+        }else{
+          this.setState({selectedFile: ''})
+        }
         this.setState({ car, carId: id, isLoading: false });
-
+        
         //INITIAL TEXT FIELD UPDATE
         this.updateFormFields(car);
       });
@@ -192,6 +185,7 @@ class CarInfo extends Component {
       )
       .then(res => {
         images = res.data.images;
+        console.log(images)
         const links = makeNewObject(images, [], "filename");
         const options = { ...this.state.options };
         options.link = [...links];
@@ -229,7 +223,7 @@ class CarInfo extends Component {
     event.preventDefault();
     const formdata = { ...this.state.formdata };
     let carId = this.state.carId;
-    let isValid = formIsValid(carId, formdata, this.uploadImage);
+    let isValid = formIsValid(carId, formdata, this.uploadImage, this.state.selectedFile);
     this.setState({ formSubmit: true });
     if (isValid) {
       if (this.state.formType === "Создать") {
@@ -271,11 +265,12 @@ class CarInfo extends Component {
   };
 
   // SELECT A PICTURE TO UPLOAD
-  updateFile = file => {
-    this.setState({ file });
+  selectedFile = file => {
+    this.setState({ selectedFile: file });
   };
 
   render() {
+    console.log(this.state.selectedFile)
     return (
       <AdminLayout>
         {this.state.isLoading ? (
@@ -287,8 +282,10 @@ class CarInfo extends Component {
             <h2>{this.state.formType}</h2>
             <ImageUploader
               id={this.state.carId}
-              img={this.state.formdata.link.value}
-              updateFile={file => this.updateFile(file)}
+              img={this.state.selectedFile}  
+              type={this.state.formType }            
+              selectedFile={file=>this.selectedFile(file)}
+              images = {this.state.options.link}
             />
             <form
               onSubmit={event => this.submitHander(event)}

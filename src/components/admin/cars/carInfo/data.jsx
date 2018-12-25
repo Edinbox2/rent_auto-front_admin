@@ -1,7 +1,5 @@
 export const data = [
-    {
-        id: 'link'
-    }, 
+  
     {
         id:"name", 
     },
