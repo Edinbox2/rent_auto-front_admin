@@ -15,19 +15,18 @@ class CarInfo extends Component {
     formType: "",
     file: null,
     isLoading: true,
-    carId: "",
+    carId: null,
     car: [],
-    selectedFile: '',
-    images: null,
+    uploadedFile: "",
+    selectedFile: "",
+    listOfImages: [],
     options: {
-      link: [],
       brand: []
     },
     formSubmit: false,
     formError: false,
     formSuccess: "",
     formdata: {
-     
       name: {
         value: "",
         element: "input",
@@ -139,28 +138,33 @@ class CarInfo extends Component {
     const id = this.props.match.params.id;
 
     // CAR DATA
-    axios
-      .get(`https://api.rent-auto.biz.tm/info_models`, getHeaders())
-      .then(res => {
-        let car;
-        for (let key in res.data) {
-          if (res.data[key].id == id) {
-            car = res.data[key];
+    if (id) {
+      axios
+        .get(`https://api.rent-auto.biz.tm/info_models`, getHeaders())
+        .then(res => {
+          let car;
+          for (let key in res.data) {
+            if (res.data[key].id == id) {
+              car = res.data[key];
+            }
           }
-        }
-        if(car){
-          this.setState({selectedFile: car.link})
-        }else{
-          this.setState({selectedFile: ''})
-        }
-        this.setState({ car, carId: id, isLoading: false });
-        
-        //INITIAL TEXT FIELD UPDATE
-        this.updateFormFields(car);
-      });
+          if (car) {
+            this.setState({ selectedFile: car.link });
+          } else {
+            this.setState({ selectedFile: "" });
+          }
+          this.setState({ car, carId: id, isLoading: false });
 
-    // SELECT ITEM - LIST OF IMAGES
-    this.getTheImages(id);
+          //INITIAL TEXT FIELD UPDATE
+          this.updateFormFields(car);
+        });
+        
+      // SELECT ITEM - LIST OF IMAGES
+      this.getTheImages(id);
+    }else{
+      this.updateFormFields();
+      this.setState({isLoading: false})
+    }
 
     //BRANDS
     axios.get(`https://api.rent-auto.biz.tm/brands`, getHeaders()).then(res => {
@@ -173,24 +177,16 @@ class CarInfo extends Component {
 
   // REQUEST THE LIST OF IMAGES
   getTheImages = id => {
+    
     let images = [];
     axios
-      .get(
-        `${
-          id
-            ? `https://srv.rent-auto.biz.tm/images/models/${id}}`
-            : `https://srv.rent-auto.biz.tm/images`
-        }`,
-        getHeaders()
-      )
+      .get(`https://srv.rent-auto.biz.tm/images/models/${id}`, getHeaders())
       .then(res => {
         images = res.data.images;
-        console.log(images)
-        const links = makeNewObject(images, [], "filename");
-        const options = { ...this.state.options };
-        options.link = [...links];
-        this.setState({ options, images });
+        const listOfImages = makeNewObject(images, [], "filename");
+        this.setState({ listOfImages });
       });
+
   };
 
   // INITIAL TEXT FIELD UPDATE
@@ -207,12 +203,7 @@ class CarInfo extends Component {
   // UPDATE THE TEXT FIELDS
   updateHandler = element => {
     const formdata = { ...this.state.formdata };
-    const form = updateField(
-      element,
-      formdata,
-      this.state.carId,
-      this.state.images
-    );
+    const form = updateField(element, formdata, this.state.carId);
     this.setState({
       formdata: form
     });
@@ -223,7 +214,13 @@ class CarInfo extends Component {
     event.preventDefault();
     const formdata = { ...this.state.formdata };
     let carId = this.state.carId;
-    let isValid = formIsValid(carId, formdata, this.uploadImage, this.state.selectedFile);
+    let isValid = formIsValid(
+      carId,
+      formdata,
+      this.uploadImage,
+      this.state.selectedFile
+    );
+    console.log(isValid)
     this.setState({ formSubmit: true });
     if (isValid) {
       if (this.state.formType === "Создать") {
@@ -250,8 +247,8 @@ class CarInfo extends Component {
     if (id) {
       if (this.state.file) {
         const fd = new FormData();
-        const image = this.state.file.name;
-        const data = this.state.file;
+        const image = this.state.uploadedFile.name;
+        const data = this.state.uploadedFile;
         fd.append("file", data, image);
         axios
           .post(
@@ -259,18 +256,24 @@ class CarInfo extends Component {
             fd,
             getHeaders()
           )
-          .then(res => {});
+          .then(res => {
+            console.log('success')
+          });
       }
     }
   };
 
   // SELECT A PICTURE TO UPLOAD
-  selectedFile = file => {
-    this.setState({ selectedFile: file });
+  uploadedFile = file => {
+    this.setState({ uploadedFile: file });
   };
 
+  selectedFile=(file)=>{
+    this.setState({selectedFile: file})
+    this.getTheImages(this.state.carId)
+  }
+
   render() {
-    console.log(this.state.selectedFile)
     return (
       <AdminLayout>
         {this.state.isLoading ? (
@@ -282,10 +285,10 @@ class CarInfo extends Component {
             <h2>{this.state.formType}</h2>
             <ImageUploader
               id={this.state.carId}
-              img={this.state.selectedFile}  
-              type={this.state.formType }            
-              selectedFile={file=>this.selectedFile(file)}
-              images = {this.state.options.link}
+              img={this.state.selectedFile}
+              selectedFile={file => this.selectedFile(file)}
+              uploadedFile={this.uploadedFile}
+              listOfImages={this.state.listOfImages}
             />
             <form
               onSubmit={event => this.submitHander(event)}

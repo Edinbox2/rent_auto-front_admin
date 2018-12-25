@@ -40,25 +40,7 @@ export const updateRental = (item, formdata) => {
 // FIELD UPDATE
 export const updateField = (element, formdata, id, images) => {
   const newElement = { ...formdata[element.id] };
-  if (element.id === "link") {
-    if (id) {
-      newElement.value = `https://srv.rent-auto.biz.tm/images/models/${id}/${
-        element.event.target.value
-      }`;
-    } else {
-      let imgId = null;
-      images.filter(item => {
-        if (item.filename == element.event.target.value) {
-          imgId = item.resource_id;
-        }
-      });
-      newElement.value = `https://srv.rent-auto.biz.tm/images/models/${imgId}/${
-        element.event.target.value
-      }`;
-    }
-  } else {
-    newElement.value = element.event.target.value;
-  }
+  newElement.value = element.event.target.value;
   const validData = validate(newElement);
   newElement.valid = validData[0];
   newElement.validationMessage = validData[1];
@@ -98,7 +80,7 @@ export const formIsValidRates = (id, formdata, options) => {
 };
 
 //SUBMIT CAR FORM
-export const formIsValid = (carId, formdata, uploadImage, selectedFile) => {
+export const formIsValid = (id, formdata, uploadImage, selectedFile) => {
   let dataToSubmit = {};
   let dataIsValid = true;
   for (let key in formdata) {
@@ -109,22 +91,22 @@ export const formIsValid = (carId, formdata, uploadImage, selectedFile) => {
   if (dataIsValid) {
     let model;
 
-    if (carId) {
+    if (id) {
       model = {
-        id: carId,
+        id: id,
         name: dataToSubmit.name,
         link: selectedFile,
         style: dataToSubmit.style,
         engine_volume: dataToSubmit.engine_volume,
         note: dataToSubmit.note,
-        model_class: { id: carId, name: dataToSubmit.model_class },
+        model_class: { id: id, name: dataToSubmit.model_class },
         brand: { name: dataToSubmit.brand },
-        rentals: [{ id: carId, day_cost: dataToSubmit.rental }]
+        rentals: [{ id: id, day_cost: dataToSubmit.rental }]
       };
 
       axios
         .patch(
-          `https://api.rent-auto.biz.tm/models/${model.id}`,
+          `https://api.rent-auto.biz.tm/models/${id}`,
           model,
           getHeaders()
         )
