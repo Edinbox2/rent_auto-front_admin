@@ -158,12 +158,12 @@ class CarInfo extends Component {
           //INITIAL TEXT FIELD UPDATE
           this.updateFormFields(car);
         });
-        
+
       // SELECT ITEM - LIST OF IMAGES
       this.getTheImages(id);
-    }else{
+    } else {
       this.updateFormFields();
-      this.setState({isLoading: false})
+      this.setState({ isLoading: false });
     }
 
     //BRANDS
@@ -177,7 +177,6 @@ class CarInfo extends Component {
 
   // REQUEST THE LIST OF IMAGES
   getTheImages = id => {
-    
     let images = [];
     axios
       .get(`https://srv.rent-auto.biz.tm/images/models/${id}`, getHeaders())
@@ -186,7 +185,6 @@ class CarInfo extends Component {
         const listOfImages = makeNewObject(images, [], "filename");
         this.setState({ listOfImages });
       });
-
   };
 
   // INITIAL TEXT FIELD UPDATE
@@ -220,14 +218,11 @@ class CarInfo extends Component {
       this.uploadImage,
       this.state.selectedFile
     );
-    console.log(isValid)
+    console.log(isValid);
     this.setState({ formSubmit: true });
     if (isValid) {
       if (this.state.formType === "Создать") {
         this.setState({ formSuccess: "готово!" });
-        setTimeout(() => {
-          this.props.history.push("/dashboard/cars");
-        }, 1000);
       } else {
         this.setState({
           formSuccess: "изменения сохранены!",
@@ -243,9 +238,9 @@ class CarInfo extends Component {
   };
 
   // UPLOAD AN IMAGE AT THE CREATE CAR OPTION
-  uploadImage = id => {
+  uploadImage = (id, model) => {
     if (id) {
-      if (this.state.file) {
+      if (this.state.uploadedFile) {
         const fd = new FormData();
         const image = this.state.uploadedFile.name;
         const data = this.state.uploadedFile;
@@ -257,7 +252,16 @@ class CarInfo extends Component {
             getHeaders()
           )
           .then(res => {
-            console.log('success')
+            const newName = this.state.uploadedFile.name.slice(0, -3);
+            const selectedFile = res.config.url + "/" + newName + "jpeg";
+            this.setState({ selectedFile });
+            const obj = { ...model };
+            obj["link"] = selectedFile;
+            axios
+              .patch(`https://api.rent-auto.biz.tm/models/${id}`, obj, getHeaders())
+              .then(res => {
+                this.props.history.push("/dashboard/cars");
+              });
           });
       }
     }
@@ -268,10 +272,10 @@ class CarInfo extends Component {
     this.setState({ uploadedFile: file });
   };
 
-  selectedFile=(file)=>{
-    this.setState({selectedFile: file})
-    this.getTheImages(this.state.carId)
-  }
+  selectedFile = file => {
+    this.setState({ selectedFile: file });
+    this.getTheImages(this.state.carId);
+  };
 
   render() {
     return (

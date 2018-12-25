@@ -75,8 +75,8 @@ class Uploader extends Component {
         <form onSubmit={e => this.submitUploadHandler(e)}>
           <input type="file" onChange={this.upLoadFileHanlder} />
           
-          {this.props.id ? (
-            <button onClick={e => this.submitUploadHandler(e)}>
+          {this.props.id && this.state.uploadedFile ? (
+            <button  onClick={e => this.submitUploadHandler(e)}>
               Загрузить
             </button>
           ) : null}

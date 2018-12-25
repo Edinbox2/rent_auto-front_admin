@@ -128,7 +128,7 @@ export const formIsValid = (id, formdata, uploadImage, selectedFile) => {
         .post(`https://api.rent-auto.biz.tm/models`, model, getHeaders())
         .then(res => {
           const newCarId = res.data.id;
-          uploadImage(newCarId);
+          uploadImage(newCarId, model);
         });
       return true;
     }
