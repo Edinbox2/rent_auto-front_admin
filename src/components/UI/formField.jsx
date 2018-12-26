@@ -50,10 +50,11 @@ const FormField = ({ formdata, id, change, className, submit, options }) => {
                     </div> 
                   ): null}
                   <textarea name={id} id={id} 
+                  className={className}
                   value={formdata.value}
                   onChange={event => change({ event, id })}
-                  >                  
-                  </textarea> 
+                  />                  
+                  
                   {showError()}
                 </div>
         

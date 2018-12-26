@@ -30,6 +30,7 @@
     width: 300px;
     padding: 10px 20px; 
     border: 1px solid #ccc;
+    box-sizing: border-box;
     margin-bottom: 10px; 
 }
 
