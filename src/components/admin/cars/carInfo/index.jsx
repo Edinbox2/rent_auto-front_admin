@@ -19,7 +19,6 @@ class CarInfo extends Component {
     car: [],
     uploadedFile: "",
     selectedFile: "",
-    listOfImages: [],
     options: {
       brand: []
     },
@@ -160,7 +159,6 @@ class CarInfo extends Component {
         });
 
       // SELECT ITEM - LIST OF IMAGES
-      this.getTheImages(id);
     } else {
       this.updateFormFields();
       this.setState({ isLoading: false });
@@ -174,18 +172,6 @@ class CarInfo extends Component {
       this.setState({ options });
     });
   }
-
-  // REQUEST THE LIST OF IMAGES
-  getTheImages = id => {
-    let images = [];
-    axios
-      .get(`https://srv.rent-auto.biz.tm/images/models/${id}`, getHeaders())
-      .then(res => {
-        images = res.data.images;
-        const listOfImages = makeNewObject(images, [], "filename");
-        this.setState({ listOfImages });
-      });
-  };
 
   // INITIAL TEXT FIELD UPDATE
   updateFormFields = car => {
@@ -218,7 +204,6 @@ class CarInfo extends Component {
       this.uploadImage,
       this.state.selectedFile
     );
-    console.log(isValid);
     this.setState({ formSubmit: true });
     if (isValid) {
       if (this.state.formType === "Создать") {
@@ -274,10 +259,15 @@ class CarInfo extends Component {
 
   selectedFile = file => {
     this.setState({ selectedFile: file });
-    this.getTheImages(this.state.carId);
+
   };
 
+  resetImage=()=>{
+    this.setState({uploadImage: '', selectedFile: ''})
+  }
+
   render() {
+  console.log("ссылка на изображение в индексе" + this.state.selectedFile)
     return (
       <AdminLayout>
         {this.state.isLoading ? (
@@ -292,7 +282,9 @@ class CarInfo extends Component {
               img={this.state.selectedFile}
               selectedFile={file => this.selectedFile(file)}
               uploadedFile={this.uploadedFile}
-              listOfImages={this.state.listOfImages}
+              resetImage={()=>this.resetImage()}
+              submitForm={(event)=>this.submitHander(event)}
+              
             />
             <form
               onSubmit={event => this.submitHander(event)}
