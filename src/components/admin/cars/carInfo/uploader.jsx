@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { getHeaders, makeNewObject } from "../../../UI/misc";
+import { getHeaders } from "../../../UI/misc";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { replaceImage, getTheName, getTheImages } from "./utilities/uploaderMisc";
 
 class Uploader extends Component {
   state = {
@@ -12,6 +13,7 @@ class Uploader extends Component {
     name: "",
     componentIsLoaded: false
   };
+  
 
   // 1. первое изображение - из api
   // 2. получаем список изображений
@@ -22,94 +24,28 @@ class Uploader extends Component {
       // 1. получаем список изображений
       // 2. устанавливаем соответствующее ему имя в селекте
 
-      this.getTheImages(id);
+      getTheImages(this.stateHandler, id, 
+        this.props.img, getTheName, 
+          this.props.selectedFile, this.props.selectedFile);
       if (this.state.listOfImages.length < 1) {
         this.setState({ isImage: false });
       }
     }
     console.log("загрузка компонента - конец");
-    if(this.state){
-      this.setState({componentIsLoaded: true})
+    if (this.state) {
+      this.setState({ componentIsLoaded: true });
     }
-    
   }
 
-  // REQUEST THE LIST OF IMAGES
-  getTheImages = id => {
-    return new Promise((resolve, reject) => {
-      console.log("получение изображений - старт");
-      let images = [];
-      axios
-        .get(`https://srv.rent-auto.biz.tm/images/models/${id}`, getHeaders())
-        .then(res => {
-          images = res.data.images;
-          const listOfImages = makeNewObject(images, [], "filename");
-          this.setState({ listOfImages });
-          console.log("изображения получены: ");
-          console.log(listOfImages);
-          console.log("получение имени изображения - начало");
-          this.getTheName(
-            this.props.id,
-            this.state.listOfImages,
-            this.props.img
-          );
-          // TЕСЛИ ИМЯ ОТСУТСТВУЕТ, ПОЛУЧАЕ ИМЯ ТЕКУЩЕГО ИЗОБРАЖЕНИЯ
-          if (this.props.img == null) {
-            console.log(
-              "у нас пустая ячейка для изображения - загружаем в нее первое из массива"
-            );
-            console.log("select the first image");
-            console.log("пустое ли у нас имя? ");
-            console.log(this.state.name);
-            const selectedFile = `https://srv.rent-auto.biz.tm/images/models/${id}/${
-              listOfImages[0].name
-            }`;
-            this.props.selectedFile(selectedFile);
-            this.getTheName(
-              this.props.id,
-              this.state.listOfImages,
-              this.props.img
-            );
-          }
+  stateHandler = (...arg)=>{
+    this.setState(...arg)
+    console.log('statehandler', this.state)
+  }
 
-          console.log(
-            "возвращаем получаем список изображений в промисе ",
-            listOfImages
-          );
-          resolve(listOfImages);
-        });
-    });
-  };
 
-  getTheName = (id, listOfImages, img) => {
-    console.log("получение имени изображения из списка: ", listOfImages);
-    let name;
-    listOfImages.map(item => {
-      // ASSIGN THE NAME OF DISPLAYED IMAGE
-      console.log("ссылка компонента ", img);
-      if (
-        `https://srv.rent-auto.biz.tm/images/models/${id}/${item.name}` === img
-      ) {
-        console.log("получение имени");
-        return (name = item.name);
-      }
-    });
-    console.log("имя компонента ", name);
-    this.setState({ name });
-  };
-
-  getTheFirstImage = listOfImages => {
-    // IF AFTER DELETING THERE WAS NO IMAGE UPLOADED - SELECT A DEFAULT FIRST IMAGE FROM THE ARRAY OF IMAGES
-    const list = listOfImages;
-    const selectedFile = `https://srv.rent-auto.biz.tm/images/models/${
-      this.props.id
-    }/${list[0].name}`;
-    return [list[0].name, selectedFile];
-  };
-
-  upLoadFileHanlder = event => {
-    console.log("выбор нового изображения - начало");
-    this.setState({ uploadedFile: event.target.files[0] });
+  upLoadHanlder = event => {
+    console.log("выбор нового изображения - начало");    
+    this.stateHandler({ uploadedFile: event.target.files[0] });
     if (!this.props.id) {
       console.log("нет id - отправка данных из upload в index");
       console.log(event.target.files[0]);
@@ -152,7 +88,9 @@ class Uploader extends Component {
           });
           console.log("отправляем выбранное изображение в индекс");
           console.log("обновляем список изображений");
-          this.getTheImages(this.props.id);
+          getTheImages(this.stateHandler, this.props.id, 
+            this.props.img, getTheName, 
+              this.props.selectedFile, this.props.selectedFile);
         });
     }
   };
@@ -165,56 +103,27 @@ class Uploader extends Component {
     this.setState({ name: event.target.value });
   };
 
-  // DELETE THE IMAGE FROM THE STATE AND SERVER
+  
   deleteImage = event => {
+    console.log("УДАЛЕНИЕ");
     this.setState({
       uploadedFile: null,
       name: ""
     });
     console.log("обнулем state: ", this.state);
-    console.log("обнуляем ссылку в индексе");
-    this.props.selectedFile("");
-    // REMOVE THE IMAGE FROM THE SERVER
-    axios
-      .delete(
-        `https://srv.rent-auto.biz.tm/images/models/${this.props.id}/${
-          this.state.name
-        }`,
-        getHeaders()
-      )
-      .then(res => {
-        console.log("удаляем это изображение из базы: ", res);
-        let data;
-        console.log("изображение удалено из базы! 1. обновляем список");
-        this.getTheImages(this.props.id).then(res => {
-          console.log("получаем новый список ", res);
-          if (res.length > 0) {
-            data = {
-              name: res[0].name,
-              selectedFile: `https://srv.rent-auto.biz.tm/images/models/${
-                this.props.id
-              }/${res[0].name}`
-            };
-            console.log(
-              "выбираем первый элемент списка и кладём его имя и сылку в data",
-              data
-            );
-            this.setState({ name: data.name, isImage: true });
-
-            console.log("устанавливаем имя и ссылку в state: ", this.state);
-            console.log(
-              "отправляем ссылку на изображение в индекс",
-              data.selectedFile
-            );
-            this.props.selectedFile(data.selectedFile);
-
-            console.log("вызываем функцию соранить форму в индексе");
-            this.props.submitForm(event);
-          } else {
-            this.setState({ isImage: false });
-          }
-        });
-      });
+    console.log("ЗАПУСКАЕМ REPLACEIMAGE");
+    replaceImage(
+      this.stateHandler,
+      this.props.id,
+      this.state.name,
+      this.props.img,
+      getTheImages,
+      this.props.submitForm,
+      event,
+      this.props.selectedFile
+    ).then(res => {
+      this.setState({ name: res.name, isImage: res.isImage });
+    });
   };
 
   render() {
@@ -240,7 +149,7 @@ class Uploader extends Component {
 
             {/* form with input and button */}
             <form onSubmit={e => this.submitUploadHandler(e)}>
-              <input type="file" onChange={this.upLoadFileHanlder} />
+              <input type="file" onChange={this.upLoadHanlder} />
 
               {this.props.id && this.state.uploadedFile ? (
                 <button onClick={e => this.submitUploadHandler(e)}>
@@ -269,7 +178,9 @@ class Uploader extends Component {
               ) : null}
             </form>
           </div>
-        ) : <CircularProgress />}
+        ) : (
+          <CircularProgress />
+        )}
       </div>
     );
   }
