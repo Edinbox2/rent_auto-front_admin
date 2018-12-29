@@ -6,10 +6,11 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 class Uploader extends Component {
   state = {
     listOfImages: [],
-    selectedFile: "",
+    isImage: true,
     uploadedFile: null,
     isLoading: false,
-    name: ""
+    name: "",
+    componentIsLoaded: false
   };
 
   // 1. первое изображение - из api
@@ -17,17 +18,20 @@ class Uploader extends Component {
   componentDidMount() {
     console.log("загрузка компонента - старт");
     const id = this.props.id;
-    if (this.props.img) {
-      console.log("изображение полученное ищ апи" + this.props.img);
-      this.setState({ selectedFile: this.props.img });
-    }
     if (id) {
       // 1. получаем список изображений
       // 2. устанавливаем соответствующее ему имя в селекте
 
       this.getTheImages(id);
+      if (this.state.listOfImages.length < 1) {
+        this.setState({ isImage: false });
+      }
     }
     console.log("загрузка компонента - конец");
+    if(this.state){
+      this.setState({componentIsLoaded: true})
+    }
+    
   }
 
   // REQUEST THE LIST OF IMAGES
@@ -44,9 +48,13 @@ class Uploader extends Component {
           console.log("изображения получены: ");
           console.log(listOfImages);
           console.log("получение имени изображения - начало");
-          this.getTheName(this.state.listOfImages);
+          this.getTheName(
+            this.props.id,
+            this.state.listOfImages,
+            this.props.img
+          );
           // TЕСЛИ ИМЯ ОТСУТСТВУЕТ, ПОЛУЧАЕ ИМЯ ТЕКУЩЕГО ИЗОБРАЖЕНИЯ
-          if (this.state.selectedFile == null) {
+          if (this.props.img == null) {
             console.log(
               "у нас пустая ячейка для изображения - загружаем в нее первое из массива"
             );
@@ -56,10 +64,12 @@ class Uploader extends Component {
             const selectedFile = `https://srv.rent-auto.biz.tm/images/models/${id}/${
               listOfImages[0].name
             }`;
-            this.setState({
-              selectedFile
-            });
-            this.getTheName(this.state.listOfImages);
+            this.props.selectedFile(selectedFile);
+            this.getTheName(
+              this.props.id,
+              this.state.listOfImages,
+              this.props.img
+            );
           }
 
           console.log(
@@ -71,24 +81,21 @@ class Uploader extends Component {
     });
   };
 
-  getTheName = listOfImages => {
+  getTheName = (id, listOfImages, img) => {
     console.log("получение имени изображения из списка: ", listOfImages);
     let name;
     listOfImages.map(item => {
       // ASSIGN THE NAME OF DISPLAYED IMAGE
-      console.log('ссылка компонента ', this.props.img)
+      console.log("ссылка компонента ", img);
       if (
-        `https://srv.rent-auto.biz.tm/images/models/${this.props.id}/${
-          item.name
-        }` === this.props.img
+        `https://srv.rent-auto.biz.tm/images/models/${id}/${item.name}` === img
       ) {
         console.log("получение имени");
-        return name = item.name;
+        return (name = item.name);
       }
     });
     console.log("имя компонента ", name);
     this.setState({ name });
-    // this.setState({ name: data[0], selectedFile: data[1] });
   };
 
   getTheFirstImage = listOfImages => {
@@ -113,7 +120,7 @@ class Uploader extends Component {
   submitUploadHandler = e => {
     console.log("загружаем новое изображение...");
     e.preventDefault();
-    if (this.props.id) {
+    if (this.props.id && this.state.uploadedFile) {
       console.log("если есть id");
       const fd = new FormData();
       const name = this.state.uploadedFile.name;
@@ -137,9 +144,13 @@ class Uploader extends Component {
             "создаём ссылку на новое изображение и присваиваем в state ",
             selectedFile
           );
-          this.setState({ selectedFile, isLoading: false });
-          console.log("отправляем выбранное изображение в индекс");
           this.props.selectedFile(selectedFile);
+          this.setState({
+            isLoading: false,
+            isImage: true,
+            uploadedFile: null
+          });
+          console.log("отправляем выбранное изображение в индекс");
           console.log("обновляем список изображений");
           this.getTheImages(this.props.id);
         });
@@ -150,20 +161,19 @@ class Uploader extends Component {
     const selectedFile = `https://srv.rent-auto.biz.tm/images/models/${
       this.props.id
     }/${event.target.value}`;
-    this.setState({ selectedFile, name: event.target.value });
     this.props.selectedFile(selectedFile);
+    this.setState({ name: event.target.value });
   };
 
   // DELETE THE IMAGE FROM THE STATE AND SERVER
   deleteImage = event => {
-    
     this.setState({
       uploadedFile: null,
-      selectedFile: null
+      name: ""
     });
-    console.log('обнулем state: ', this.state)
-    console.log('обнуляем ссылку в индексе')
-    this.props.selectedFile(this.state.selectedFile)
+    console.log("обнулем state: ", this.state);
+    console.log("обнуляем ссылку в индексе");
+    this.props.selectedFile("");
     // REMOVE THE IMAGE FROM THE SERVER
     axios
       .delete(
@@ -172,77 +182,94 @@ class Uploader extends Component {
         }`,
         getHeaders()
       )
-      .then((res) => {
-        console.log('удаляем это изображение из базы: ', res)
+      .then(res => {
+        console.log("удаляем это изображение из базы: ", res);
         let data;
-        console.log('изображение удалено из базы! 1. обновляем список')
+        console.log("изображение удалено из базы! 1. обновляем список");
         this.getTheImages(this.props.id).then(res => {
-          console.log('получаем новый список ', res);
-          data = {
-            name: res[0].name,
-            selectedFile: `https://srv.rent-auto.biz.tm/images/models/${
-              this.props.id
-            }/${res[0].name}`
-          };
-          console.log('выбираем первый элемент списка и кладём его имя и сылку в data', data )
-          
-          this.setState({ name: data.name, selectedFile: data.selectedFile });
-          console.log("устанавливаем имя и ссылку в state: ", this.state);
-          console.log("отправляем ссылку на изображение в индекс", data.selectedFile);
-          this.props.selectedFile(data.selectedFile);
-          console.log("вызываем функцию соранить форму в индексе");
-          this.props.submitForm(event);
+          console.log("получаем новый список ", res);
+          if (res.length > 0) {
+            data = {
+              name: res[0].name,
+              selectedFile: `https://srv.rent-auto.biz.tm/images/models/${
+                this.props.id
+              }/${res[0].name}`
+            };
+            console.log(
+              "выбираем первый элемент списка и кладём его имя и сылку в data",
+              data
+            );
+            this.setState({ name: data.name, isImage: true });
+
+            console.log("устанавливаем имя и ссылку в state: ", this.state);
+            console.log(
+              "отправляем ссылку на изображение в индекс",
+              data.selectedFile
+            );
+            this.props.selectedFile(data.selectedFile);
+
+            console.log("вызываем функцию соранить форму в индексе");
+            this.props.submitForm(event);
+          } else {
+            this.setState({ isImage: false });
+          }
         });
       });
   };
 
   render() {
-    // console.log("state: ", this.state);
+    console.log("state: ", this.state);
     return (
       <div>
-        {/* image */}
-        {this.props.img ? (
-          this.state.isLoading ? (
-            <CircularProgress />
-          ) : (
-            <img
-              style={{ width: "300px" }}
-              src={this.state.selectedFile}
-              alt="file name"
-            />
-          )
-        ) : (
-          <h4>выберите файл из списка</h4>
-        )}
+        {this.state.componentIsLoaded ? (
+          <div>
+            {/* image */}
+            {this.props.img && this.state.listOfImages.length > 0 ? (
+              this.state.isLoading ? (
+                <CircularProgress />
+              ) : (
+                <img
+                  style={{ width: "300px" }}
+                  src={this.props.img}
+                  alt="file name"
+                />
+              )
+            ) : (
+              <h4>выберите файл из списка</h4>
+            )}
 
-        {/* form with input and button */}
-        <form onSubmit={e => this.submitUploadHandler(e)}>
-          <input type="file" onChange={this.upLoadFileHanlder} />
+            {/* form with input and button */}
+            <form onSubmit={e => this.submitUploadHandler(e)}>
+              <input type="file" onChange={this.upLoadFileHanlder} />
 
-          {this.props.id && this.state.uploadedFile ? (
-            <button onClick={e => this.submitUploadHandler(e)}>
-              Загрузить
-            </button>
-          ) : null}
-        </form>
-        <button onClick={event => this.deleteImage(event)}>удалить файл</button>
-
-        {/* select with the list of images */}
-        {this.props.id && this.state.listOfImages ? (
-          <select
-            value={this.state.name}
-            onChange={event => this.selectHandler(event)}
-          >
-            {/* <option value={this.state.name}>{this.state.name}</option> */}
-            {this.state.listOfImages
-              ? this.state.listOfImages.map((item, index) => (
-                  <option key={index} value={item.name}>
-                    {item.name}
-                  </option>
-                ))
-              : null}
-          </select>
-        ) : null}
+              {this.props.id && this.state.uploadedFile ? (
+                <button onClick={e => this.submitUploadHandler(e)}>
+                  Загрузить
+                </button>
+              ) : null}
+              {this.props.id && this.state.listOfImages.length > 0 ? (
+                <div>
+                  <button onClick={event => this.deleteImage(event)}>
+                    удалить файл
+                  </button>
+                  <select
+                    value={this.state.name}
+                    onChange={event => this.selectHandler(event)}
+                  >
+                    {/* <option value={this.state.name}>{this.state.name}</option> */}
+                    {this.state.listOfImages
+                      ? this.state.listOfImages.map((item, index) => (
+                          <option key={index} value={item.name}>
+                            {item.name}
+                          </option>
+                        ))
+                      : null}
+                  </select>
+                </div>
+              ) : null}
+            </form>
+          </div>
+        ) : <CircularProgress />}
       </div>
     );
   }
