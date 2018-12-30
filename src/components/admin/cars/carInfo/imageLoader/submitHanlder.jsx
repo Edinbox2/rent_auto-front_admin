@@ -1,15 +1,14 @@
-import axios from "axios";
-import { getHeaders, makeNewObject } from "../../../../UI/misc";
+import axios from 'axios'
+import { getHeaders } from "../../../../UI/misc";
+import {getTheName, getTheImages} from './imageLoader';
 
-
-
-export const submitUpload = (id, state, sendSelectedFile, getTheImages) => {
-  if (id) {
-    console.log("если есть id");
+export const submitUpload = (setState, id, img, uploadedFile, sendSelectedFile) => {
+  if (id && uploadedFile) {
+    console.log("есть id, ", id, 'image:', img);
     const fd = new FormData();
-    const name = state.uploadedFile.name;
-    const data = state.uploadedFile;
-
+    const name = uploadedFile.name;
+    const data = uploadedFile;
+    setState({ isLoading: true });
     fd.append("file", data, name);
     axios
       .post(
@@ -28,13 +27,15 @@ export const submitUpload = (id, state, sendSelectedFile, getTheImages) => {
           "создаём ссылку на новое изображение и присваиваем в state ",
           selectedFile
         );
-
+        sendSelectedFile(selectedFile);
+        setState({
+          isLoading: false,
+          isImage: true,
+          uploadedFile: null
+        });
         console.log("отправляем выбранное изображение в индекс");
-        sendSelectedFile(state.selectedFile);
         console.log("обновляем список изображений");
-        getTheImages(id);
-        const result = { selectedFile: selectedFile, isLoading: false };
-        return result;
+        getTheImages(setState, id, selectedFile, getTheName, sendSelectedFile);
       });
   }
-};
+  };

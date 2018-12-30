@@ -6,7 +6,7 @@ import axios from "axios";
 import { data } from "./data";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { getHeaders, makeNewObject } from "../../../UI/misc";
-import ImageUploader from "./uploader";
+import ImageUploader from "./imageLoader/uploader";
 import { updateFields, updateField, formIsValid } from "./utilities";
 import Rentals from "./rates/";
 
