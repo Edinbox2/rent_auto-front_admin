@@ -1,4 +1,4 @@
-import { validate, getHeaders } from "../../../UI/misc";
+import { validate, getHeaders, makeNewObject } from "../../../UI/misc";
 
 import axios from "axios";
 
@@ -48,8 +48,7 @@ export const updateField = (element, formdata, id, images) => {
   return formdata;
 };
 
-//SUBMIT RATES FROM
-
+// SUBMIT RATES FROM
 export const formIsValidRates = (id, formdata, options) => {
   let dataIsValid = true;
 
@@ -79,8 +78,16 @@ export const formIsValidRates = (id, formdata, options) => {
   }
 };
 
-//SUBMIT CAR FORM
-export const formIsValid = (id, formdata, uploadImage, selectedFile) => {
+// SUBMIT CAR FORM
+export const formIsValid = (
+  setState,
+  id,
+  formdata,
+  autoUploadImage,
+  selectedFile,
+  uploadedFile,
+  history
+) => {
   let dataToSubmit = {};
   let dataIsValid = true;
   for (let key in formdata) {
@@ -105,11 +112,7 @@ export const formIsValid = (id, formdata, uploadImage, selectedFile) => {
       };
 
       axios
-        .patch(
-          `https://api.rent-auto.biz.tm/models/${id}`,
-          model,
-          getHeaders()
-        )
+        .patch(`https://api.rent-auto.biz.tm/models/${id}`, model, getHeaders())
         .then(res => {});
       return true;
     } else {
@@ -128,7 +131,7 @@ export const formIsValid = (id, formdata, uploadImage, selectedFile) => {
         .post(`https://api.rent-auto.biz.tm/models`, model, getHeaders())
         .then(res => {
           const newCarId = res.data.id;
-          uploadImage(newCarId, model);
+          autoUploadImage(setState, newCarId, model, uploadedFile, history);
         });
       return true;
     }
@@ -136,3 +139,94 @@ export const formIsValid = (id, formdata, uploadImage, selectedFile) => {
     return false;
   }
 };
+
+// AUTOUPLOADIMAGE
+export const autoUploadImage = (setState, id, model, uploadedFile, history) => {
+  if (uploadedFile) {
+    const fd = new FormData();
+    const image = uploadedFile.name;
+    const data = uploadedFile;
+    fd.append("file", data, image);
+    setState({ isLoading: true });
+    axios
+      .post(
+        `https://srv.rent-auto.biz.tm/images/models/${id}`,
+        fd,
+        getHeaders()
+      )
+      .then(res => {
+        const newName = uploadedFile.name.slice(0, -3);
+        const selectedFile = res.config.url + "/" + newName + "jpeg";
+        setState({ selectedFile });
+        const obj = { ...model };
+        obj["link"] = selectedFile;
+        axios
+          .patch(`https://api.rent-auto.biz.tm/models/${id}`, obj, getHeaders())
+          .then(() => {
+            history.push("/dashboard/cars");
+            setState({ isLoading: false });
+          });
+      });
+  }
+};
+
+// CAR DATA
+export const getCarData = (setState, id, updateFormFields) => {
+  if (id) {
+    axios
+      .get(`https://api.rent-auto.biz.tm/info_models`, getHeaders())
+      .then(res => {
+        let car;
+        for (let key in res.data) {
+          if (res.data[key].id === Number(id)) {
+            car = res.data[key];
+          }
+        }
+        if (car) {
+          setState({ selectedFile: car.link });
+        } else {
+          setState({ selectedFile: "" });
+        }
+        setState({ car, carId: id, isLoading: false });
+
+        //INITIAL TEXT FIELD UPDATE
+        updateFormFields(car);
+      });
+
+    // SELECT ITEM - LIST OF IMAGES
+  } else {
+    updateFormFields();
+    setState({ isLoading: false });
+  }
+};
+
+// GET THE BRANDS
+export const getBrands = (setState, stateOptions) => {
+  axios.get(`https://api.rent-auto.biz.tm/brands`, getHeaders()).then(res => {
+    const brands = makeNewObject(res.data, [], "name");
+    const options = { ...stateOptions };
+    options.brand = [...brands];
+    setState({ options });
+  });
+};
+
+
+export const submitFrom=(setState, isValid, formType)=>{
+  setState({ formSubmit: true });
+  if (isValid) {
+    if (formType === "Создать") {
+      setState({ formSuccess: "готово!" });
+      
+    } else {
+      setState({
+        formSuccess: "изменения сохранены!",
+        formError: false
+      });
+      setTimeout(() => {
+        setState({ formSuccess: "" });
+      }, 1000);
+    }
+  } else {
+    setState({ formError: true });
+  }
+}
