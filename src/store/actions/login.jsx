@@ -66,8 +66,10 @@ export const auth = (email, password) =>{
 }
 
 export const authCheckState = () => {
+    
     return dispatch =>{
         const token = localStorage.getItem('token');
+        
         if(!token){
             dispatch(logout());
         }else {

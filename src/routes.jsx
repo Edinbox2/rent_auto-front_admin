@@ -12,30 +12,39 @@ import Logout from './components/authRoutes/logout';
 import Options from './components/admin/options'
 
 class Routes extends Component  {
-
+  state={
+    user: null
+  }
   componentDidMount(){
       this.props.onTryAutoSignup()
-      
   }
+
+  static getDerivedStateFromProps(props, state){
+    return state={
+      user: localStorage.getItem('token') !== null
+    }
+  }
+  
   render (){
+    console.log(this.state.user)
   return (
     <div>
       <Switch>  
-        <PrivateRoute {...this.props} user={this.props.user} path="/dashboard/add" exact component={CarInfo}/>
-        <PrivateRoute {...this.props} user={this.props.user} path="/dashboard/options" exact component={Options}/>
-        <PrivateRoute {...this.props} user={this.props.user} path="/dashboard/cars/:id" exact component={CarInfo}/>
-        <PrivateRoute {...this.props} user={this.props.user} path="/dashboard/cars" exact component={Cars}/>
-        <PrivateRoute {...this.props} user={this.props.user} path="/logout" exact component={Logout} />
-        <PrivateRoute {...this.props} user={this.props.user} path="/dashboard" exact component={Dashboard}/>
-        <PublicRoute {...this.props} user={this.props.user} path="/sign_in" restricted={true} exact component={SignIn} />
-        {  <Route path="/" exact /> ? <Redirect to={this.props.user ? '/dashboard' : '/sign_in'}/> : null }  
+        <PrivateRoute {...this.props} user={this.state.user} path="/dashboard/add" exact component={CarInfo}/>
+        <PrivateRoute {...this.props} user={this.state.user} path="/dashboard/options" exact component={Options}/>
+        <PrivateRoute {...this.props} user={this.state.user} path="/dashboard/cars/:id" exact component={CarInfo}/>
+        <PrivateRoute {...this.props} user={this.state.user} path="/dashboard/cars" exact component={Cars}/>
+        <PrivateRoute {...this.props} user={this.state.user} path="/logout" exact component={Logout} />
+        <PrivateRoute {...this.props} user={this.state.user} path="/dashboard" exact component={Dashboard}/>
+        <PublicRoute {...this.props} user={this.state.user} path="/sign_in" restricted={true} exact component={SignIn} />
+        {  <Route path="/" exact /> ? <Redirect to={this.state.user ? '/dashboard' : '/sign_in'}/> : null }  
       </Switch>
     </div>
   );
   }
 };
 
-
+// перезагружает state
 const mapStateToProps = state => {
   return {
     user: state.login.token !== null
