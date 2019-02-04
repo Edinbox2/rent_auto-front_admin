@@ -75,6 +75,7 @@ class addItem extends Component {
         <TableCell>id</TableCell>
         {data.map(item => (
           <TableCell key={item.name}>
+
             <input
               style={item.style}
               type={item.type}

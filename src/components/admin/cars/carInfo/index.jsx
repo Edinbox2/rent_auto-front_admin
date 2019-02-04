@@ -2,13 +2,14 @@ import React, { Component } from "react";
 import AdminLayout from "../../../hoc/adminLayout";
 import FormField from "../../../UI/formField";
 import "./carInfo.css";
-import { data } from "./data";
+import { data, formdata } from "./data";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ImageUploader from "./imageLoader/uploader";
 import { updateFields, updateField, 
   formIsValid, autoUploadImage, 
   getCarData, getBrands, submitFrom } from "./utilities";
 import Rentals from "./rates/";
+import {FormattedMessage} from 'react-intl'; 
 
 class CarInfo extends Component {
   state = {
@@ -25,118 +26,16 @@ class CarInfo extends Component {
     formSubmit: false,
     formError: false,
     formSuccess: "",
-    formdata: {
-      name: {
-        value: "",
-        element: "input",
-        config: {
-          name: "car_name",
-          type: "text",
-          label: "Имя модели"
-        },
-        validation: {
-          required: true
-        },
-        valid: false,
-        validationMessage: "",
-        showLabel: true
-      },
-      style: {
-        value: "",
-        element: "input",
-        config: {
-          name: "style",
-          type: "text",
-          label: "Стиль"
-        },
-        validation: {
-          required: true
-        },
-        valid: false,
-        validationMessage: "",
-        showLabel: true
-      },
-      brand: {
-        value: "",
-        element: "select",
-        config: {
-          name: "brand",
-          label: "Бренд"
-        },
-        validation: {
-          required: true
-        },
-        valid: false,
-        validationMessage: "",
-        showLabel: true
-      },
-      model_class: {
-        value: "",
-        element: "input",
-        config: {
-          name: "car_name",
-          type: "text",
-          label: "Класс модели"
-        },
-        validation: {
-          required: true
-        },
-        valid: false,
-        validationMessage: "",
-        showLabel: true
-      },
-      rental: {
-        value: "",
-        element: "input",
-        config: {
-          name: "car_name",
-          type: "number",
-          label: "Базовая цена"
-        },
-        validation: {
-          required: true
-        },
-        valid: false,
-        validationMessage: "",
-        showLabel: true
-      },
-      engine_volume: {
-        value: "",
-        element: "input",
-        config: {
-          name: "car_name",
-          type: "number",
-          label: "Объём двигателя модели"
-        },
-        validation: {
-          required: true
-        },
-        valid: false,
-        validationMessage: "",
-        showLabel: true
-      },
-      note: {
-        value: "",
-        element: "textarea",
-        config: {
-          name: "note",
-          type: "text",
-          label: "Описание"
-        },
-        validation: {
-          required: false
-        },
-        valid: true,
-        validationMessage: "",
-        showLabel: true
-      }
-    }
+    formdata: null
   };
 
   componentDidMount() {
     const id = this.props.match.params.id;
     getCarData(this.stateHandler, id, this.updateFormFields )
-    getBrands(this.stateHandler, this.state.options)   
+    getBrands(this.stateHandler, this.state.options) 
+    this.setState({
+      formdata
+    })  
   }
 
   stateHandler=(...args)=>{
@@ -148,9 +47,9 @@ class CarInfo extends Component {
     const formdata = { ...this.state.formdata };
     if (car) {
       const form = updateFields(car, formdata);
-      this.setState({ formdata: form, formType: "Редактировать" });
+      this.setState({ formdata: form, formType: "Edit" });
     } else {
-      this.setState({ formType: "Создать" });
+      this.setState({ formType: "Add" });
     }
   };
 
@@ -194,7 +93,6 @@ class CarInfo extends Component {
   }
 
   render() {
-  console.log("ссылка на изображение в индексе" + this.state.selectedFile)
     return (
       <AdminLayout>
         {this.state.isLoading ? (
@@ -232,14 +130,20 @@ class CarInfo extends Component {
               <div className="label_success">{this.state.formSuccess}</div>
               {this.state.formError ? (
                 <div className="label_error">
-                  что то пошло не так, повторите попытку
+                <FormattedMessage
+                id="error"
+                defaultMessage="something went wrong, try again"
+                />                  
                 </div>
               ) : null}
               <button onClick={event => this.submitHander(event)}>
-                Применить
+              <FormattedMessage
+                id="apply.btn"
+                defaultMessage="Apply"
+                />     
               </button>
             </form>
-            {this.state.formType === "Редактировать" ? (
+            {this.state.formType === "Edit" ? (
               <div className="rentals">
                 <Rentals id={this.state.carId} />
               </div>

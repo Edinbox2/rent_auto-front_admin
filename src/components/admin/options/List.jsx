@@ -12,6 +12,7 @@ import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import "./index.css";
 import { getHeaders, nextId } from "../../UI/misc";
+import {FormattedMessage} from 'react-intl'; 
 
 class List extends Component {
   state = {
@@ -90,7 +91,12 @@ class List extends Component {
               <TableRow>
                 <TableCell>id</TableCell>
                 {data.map(item => (
-                  <TableCell key={item.name}>{item.header}</TableCell>
+                  <TableCell key={item.name}>
+                  <FormattedMessage
+                  id={item.name}
+                  defaultMessage={item.name}
+                  />
+                  </TableCell>
                 ))}
                 <TableCell></TableCell>
               </TableRow>

@@ -5,7 +5,7 @@ import { updateField, populateFormRates, formIsValidRates } from "../utilities";
 import { range, slice } from "./data";
 import axios from "axios";
 import { getHeaders } from "../../../../UI/misc";
-
+import { FormattedMessage } from "react-intl";
 class RentalRates extends Component {
   state = {
     formSubmit: false,
@@ -23,8 +23,8 @@ class RentalRates extends Component {
           config: {
             type: "number",
             name: "range_one",
-            placeholder: "введите число",
-            label: "от 1 до 6 дней"
+            placeholder: "Enter a number",
+            label: "1 to 6 days"
           },
           validation: {
             required: true
@@ -39,8 +39,8 @@ class RentalRates extends Component {
           config: {
             type: "number",
             name: "range_two",
-            placeholder: "введите число",
-            label: "от 7 до 20 дней"
+            placeholder: "Enter a number",
+            label: "7 to 20 days"
           },
           validation: {
             required: true
@@ -55,8 +55,8 @@ class RentalRates extends Component {
           config: {
             type: "number",
             name: "range_three",
-            placeholder: "введите число",
-            label: "от 21 дня"
+            placeholder: "Enter a number",
+            label: "more than 20 days"
           },
           validation: {
             required: true
@@ -73,8 +73,8 @@ class RentalRates extends Component {
           config: {
             type: "number",
             name: "slice_one",
-            placeholder: "введите число",
-            label: "выходные дни"
+            placeholder: "Enter a number",
+            label: "weekend"
           },
           validation: {
             required: true
@@ -88,8 +88,8 @@ class RentalRates extends Component {
           element: "input",
           config: {
             type: "number",
-            placeholder: "введите число",
-            label: "рабочие дни",
+            placeholder: "Enter a number",
+            label: "week days",
             name: "slice_two"
           },
           validation: {
@@ -186,15 +186,21 @@ class RentalRates extends Component {
             />
           ))}
           {this.state.formSuccess ? (
-            <div className="success"> Готово!</div>
+            <div className="success">
+              {" "}
+              <FormattedMessage id="success" defaultMessage="Success!" />{" "}
+            </div>
           ) : null}
           {this.state.formError ? (
             <div className="danger">
-              Проверьте правильность заполнения полей
+              <FormattedMessage
+                id="check"
+                defaultMessage="check the information you have entered"
+              />
             </div>
           ) : null}
           <button onClick={event => this.onSubmitForm(event)}>
-            Подтвердить
+            <FormattedMessage id="apply.btn" defaultMessage="Apply" />
           </button>
         </form>
       </div>

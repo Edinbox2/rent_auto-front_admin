@@ -4,7 +4,7 @@ import { submitUpload } from "./submitHanlder";
 import { getTheImages, getTheName } from "./imageLoader";
 import { replaceImage } from "./deleteHandler";
 import { Button, Select } from "./UI";
-
+import {FormattedMessage} from 'react-intl'; 
 class Uploader extends Component {
   state = {
     listOfImages: [],
@@ -16,7 +16,7 @@ class Uploader extends Component {
   };
 
   componentDidMount() {
-    console.log("загрузка компонента - старт");
+  
     const id = this.props.id;
     if (id) {
       getTheImages(
@@ -31,7 +31,7 @@ class Uploader extends Component {
         this.setState({ isImage: false });
       }
     }
-    console.log("загрузка компонента - конец");
+   
     if (this.state) {
       this.setState({ componentIsLoaded: true });
     }
@@ -42,17 +42,16 @@ class Uploader extends Component {
   };
 
   upLoadHanlder = event => {
-    console.log("выбор нового изображения - начало");
+   
     this.stateHandler({ uploadedFile: event.target.files[0] });
     if (!this.props.id) {
-      console.log("нет id - отправка данных из upload в index");
-      console.log(event.target.files[0]);
+      
       this.props.uploadedFile(event.target.files[0]);
     }
   };
 
   submitUploadHandler = e => {
-    console.log("загружаем новое изображение...");
+    
     e.preventDefault();
     submitUpload(
       this.stateHandler,
@@ -72,13 +71,12 @@ class Uploader extends Component {
   };
 
   deleteImage = event => {
-    console.log("УДАЛЕНИЕ");
+
     this.setState({
       uploadedFile: null,
       name: ""
     });
-    console.log("обнулем state: ", this.state);
-    console.log("ЗАПУСКАЕМ REPLACEIMAGE");
+
     replaceImage(
       this.stateHandler,
       this.props.id,
@@ -94,12 +92,11 @@ class Uploader extends Component {
   };
 
   render() {
-    console.log("state: ", this.state);
     return (
       <div>
         {this.state.componentIsLoaded ? (
           <div>
-            {/* image */}
+            
             {this.props.img && this.state.listOfImages.length > 0 ? (
               this.state.isLoading ? (
                 <CircularProgress />
@@ -111,22 +108,33 @@ class Uploader extends Component {
                 />
               )
             ) : (
-              <h4>выберите файл из списка</h4>
+              <h4>
+                <FormattedMessage 
+                id="upload.image"
+                defaultMessage="upload an image"
+                />
+                </h4>
             )}
 
-            {/* form with input and button */}
+         
             <form onSubmit={e => this.submitUploadHandler(e)}>
               <input type="file" onChange={this.upLoadHanlder} />
 
               {this.props.id && this.state.uploadedFile ? (
                 <Button clicked={e => this.submitUploadHandler(e)}>
-                  Загрузить
+                  <FormattedMessage 
+                id="upload.uplaod"
+                defaultMessage="Upload"
+                />
                 </Button>
               ) : null}
               {this.props.id && this.state.listOfImages.length > 0 ? (
                 <div>
                   <Button clicked={event => this.deleteImage(event)}>
-                    удалить файл
+                  <FormattedMessage 
+                id="upload.remove"
+                defaultMessage="Remove"
+                />
                   </Button>
                   <Select
                     name={this.state.name}

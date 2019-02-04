@@ -140,7 +140,7 @@ export const formIsValid = (
   }
 };
 
-// AUTOUPLOADIMAGE
+// CARUPLOADIMAGE
 export const autoUploadImage = (setState, id, model, uploadedFile, history) => {
   if (uploadedFile) {
     const fd = new FormData();

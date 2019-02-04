@@ -1,0 +1,32 @@
+{
+    "singIn.singIn": "Вход в систему", 
+    "error": "что то пошло не так, повторите попытку",
+    "check": "Проверьте правильность заполнения полей",
+    "success": "Готово!",
+    "apply.btn": "Применить", 
+    "signIn.button": "Войти",
+    "admin.dashboard": "Панель администратора",
+    "nav.cars": "Автопарк",
+    "nav.addcar": "Добавить авто",
+    "nav.options": "Дополнительно",
+    "nav.logout": "Выйти",
+    "carlist.name": "Наименование",
+    "carlist.remove": "Удалить",
+    "upload.image": "Загрузите изображение", 
+    "upload.upload": "Загрузить", 
+    "upload.remove": "Удалить", 
+    "name": "Наименование", 
+    "code": "Код",
+    "note": "Описание",
+    "price": "Цена", 
+    "model_name": "Имя модели", 
+    "style": "Стиль", 
+    "brand": "Марка",
+    "car_class": "Класс модели",
+    "base_price": "Базовая цена",
+    "engine_volume": "Объём двигателя", 
+
+    "range_one": "от 1 до 6 дней "
+   
+
+}

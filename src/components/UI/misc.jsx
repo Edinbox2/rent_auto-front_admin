@@ -4,13 +4,13 @@ export const validate = element => {
 
   if (element.validation.email) {
     const valid = /\S+@\S+\.\S+/.test(element.value);
-    const message = !valid ? "введите почту" : "";
+    const message = !valid ? "enter you email" : "";
     error = !valid ? [valid, message] : error;
   }
 
   if (element.validation.required) {
     const valid = element.value.trim() !== "";
-    const message = !valid ? "это обязательное поле" : "";
+    const message = !valid ? "this field is required" : "";
     error = !valid ? [valid, message] : error;
   }
 

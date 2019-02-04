@@ -1,4 +1,5 @@
 import React from "react";
+import {FormattedMessage} from 'react-intl'; 
 
 const FormField = ({ formdata, id, change, className, submit, options }) => {
   const showError = () => {
@@ -21,7 +22,12 @@ const FormField = ({ formdata, id, change, className, submit, options }) => {
         template = (
           <div>
             {formdata.showLabel ? (
-              <div className="car_edit_label">{formdata.config.label}</div>
+              <div className="car_edit_label">
+              <FormattedMessage
+              id={formdata.config.name}
+              defaultMessage={formdata.config.label}
+              />
+              </div>
             ) : null}
             <input
               className={className}

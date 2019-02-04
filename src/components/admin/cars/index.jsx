@@ -11,6 +11,7 @@ import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { getHeaders } from "../../UI/misc";
+import { FormattedMessage } from "react-intl";
 
 class Cars extends Component {
   state = {
@@ -31,7 +32,7 @@ class Cars extends Component {
 
   deleteHandler = id => {
     const array = this.state.cars;
-    if (window.confirm("удалить?")) {
+    if (window.confirm("remove?")) {
       const filterArray = array.filter(item => {
         return item.id !== id;
       });
@@ -40,18 +41,14 @@ class Cars extends Component {
 
       axios
         .delete(`https://api.rent-auto.biz.tm/models/${id}`, getHeaders())
-        .then(res => {
-          console.log("item has been removed");
-        });
+        .then(res => {});
 
       axios
         .delete(
           `https://srv.rent-auto.biz.tm/images/models/${id}`,
           getHeaders()
         )
-        .then(res => {
-          console.log("image has been removed");
-        });
+        .then(res => {});
     }
   };
 
@@ -64,8 +61,15 @@ class Cars extends Component {
               <TableHead>
                 <TableRow>
                   <TableCell>id</TableCell>
-                  <TableCell>Наименование</TableCell>
-                  <TableCell>удалить</TableCell>
+                  <TableCell>
+                    <FormattedMessage id="carlist.name" defaultMessage="name" />
+                  </TableCell>
+                  <TableCell>
+                    <FormattedMessage
+                      id="carlist.remove"
+                      defaultMessage="remove"
+                    />
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

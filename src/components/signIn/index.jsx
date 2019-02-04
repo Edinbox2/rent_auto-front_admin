@@ -4,6 +4,7 @@ import "./signin.css";
 import { validate } from "../UI/misc";
 import * as actions from '../../store/actions/login';
 import {connect} from 'react-redux'; 
+import {FormattedMessage} from 'react-intl';
 
 class SignIn extends Component {
   state = {
@@ -15,13 +16,13 @@ class SignIn extends Component {
         element: "input",
         value: "",
         config: {
-          placeholder: "введите вашу почту",
+          placeholder: "Enter your email",
           type: "email",
           name: "email_input"
         },
         validation: {
           required: true,
-          email: true
+          email: false
         },
         valid: false,
         validationMessage: ""
@@ -30,7 +31,7 @@ class SignIn extends Component {
         element: "input",
         value: "",
         config: {
-          placeholder: "введите ваш пароль",
+          placeholder: "Enter your password",
           type: "password",
           name: "password_input"
         },
@@ -42,15 +43,16 @@ class SignIn extends Component {
       }
     }
   };
+  
 
   updateForm = element => {
     const formdata = { ...this.state.formdata };
     const formElement = { ...formdata[element.id] };
     formElement.value = element.event.target.value;
-    // validation
-    let validData = validate(formElement); // returns the array [valid, message]
-    formElement.valid = validData[0]; // true/false
-    formElement.validationMessage = validData[1]; // message
+   
+    let validData = validate(formElement); 
+    formElement.valid = validData[0]; 
+    formElement.validationMessage = validData[1]; 
     formdata[element.id] = formElement;
     this.setState({ formdata: formdata, formError: false });
   };
@@ -59,19 +61,7 @@ class SignIn extends Component {
     event.preventDefault();
 
     this.props.onAuth(this.state.formdata.email.value, this.state.formdata.password.value)
-    // let dataToSubmit = {};
-    // let formIsValid = true;
 
-    // for (let key in this.state.formdata) {
-    //   dataToSubmit[key] = this.state.formdata[key].value;
-    //   formIsValid = this.state.formdata[key].valid && formIsValid;
-    // }
-    // if (formIsValid) {
-      
-    // } else {
-    //   this.setState({ formError: true });
-    // }
-    // this.setState({formSubmit: true})
   };
 
   render() {
@@ -82,7 +72,12 @@ class SignIn extends Component {
             onSubmit={event => this.submitForm(event)}
             className="registration_form"
           >
-            <h2>Вход в систему</h2>
+            <h2>
+              <FormattedMessage
+              id="singIn.singIn"
+              defaultMessage="Sign in"
+              />
+              </h2>
             <div>
               <FormField
                 id={"email"}
@@ -100,11 +95,19 @@ class SignIn extends Component {
               />
               {this.state.formError ? (
                 <div className="error_label">
-                  что-то пошло не так, пропробуйте ещё раз
+                   <FormattedMessage
+              id="singIn.error"
+              defaultMessage="Something went wrong"
+              />
                 </div>
               ) : null}
               <div className="success_label">{this.state.formSuccess}</div>
-              <button onClick={event => this.submitForm(event)}>Войти</button>
+              <button onClick={event => this.submitForm(event)}>
+              <FormattedMessage
+              id="signIn.button"
+              defaultMessage="Sign in"
+              />
+              </button>
             </div>
           </form>
         </div>
